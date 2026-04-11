@@ -40,7 +40,7 @@ export const WordingTemplateContentSchema = z.object({
   tone_type: z.string().min(1),
   text: z.string().min(1),
   applicable_contexts: z.array(z.string()).optional(),
-  prohibited_use_notes: z.string().optional(),
+  prohibited_use_notes: z.string().nullish(),
 });
 
 export const WarningContentSchema = z.object({
