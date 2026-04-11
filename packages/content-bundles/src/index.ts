@@ -1,16 +1,20 @@
 // @ctcc/content-bundles
+// Typed, validated loader for versioned guidance content, wording templates, and warnings.
 //
-// Loads versioned content bundles: guidance cards, support options, wording templates.
+// PRIMARY RULE: Public policy content and Acme operational content must ALWAYS
+// be retrieved and handled as distinct sets. See .cursor/rules/content-separation-rules.mdc.
 //
-// IMPORTANT: Public policy content and Acme operational content are stored separately
-// and must NEVER be combined into a single undifferentiated source.
+// Primary usage (guidance service, workflow engine):
+//   import { loadContentBundle } from '@ctcc/content-bundles';
+//   const bundle = loadContentBundle('v1');
+//   // bundle.guidance_cards.public_policy   ← public policy cards
+//   // bundle.guidance_cards.acme_operations ← Acme operational cards
 //
-// Source domains:
-//   - public_policy: guidance grounded in publicly available UK council tax guidance principles
-//   - acme_operations: fictional Acme City Council internal handling instructions
-//
-// See docs/council_tax_call_coach_technical_prd_v_0.md §11 for content architecture.
+// Direct v1 usage (seeds, scripts):
+//   import { loadV1ContentBundle } from '@ctcc/content-bundles';
+//   const { publicPolicyGuidanceCards, acmeOperationsGuidanceCards } = loadV1ContentBundle();
 
-export * from './loader.js';
+export { loadContentBundle, type ContentBundle } from './loader.js';
+export { loadV1ContentBundle, type V1ContentBundle } from './loaders/v1.js';
 
-export const CURRENT_VERSION = 'v1';
+export const CURRENT_VERSION = 'v1' as const;

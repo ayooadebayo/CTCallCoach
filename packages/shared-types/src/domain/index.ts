@@ -126,11 +126,17 @@ export type VersionStatus = 'draft' | 'active' | 'superseded' | 'archived';
 
 export type Confidence = 'low' | 'medium' | 'high';
 export type IntentSignalSource =
-  | 'caller_stated'
+  | 'agent_selected'
+  | 'typed_note'
   | 'scenario_seed'
-  | 'agent_inferred'
-  | 'future_transcript_inference';
-export type EvidenceStatus = 'captured' | 'verified' | 'disputed' | 'withdrawn';
+  | 'future_transcript'
+  | 'workflow_inference';
+export type EvidenceStatus =
+  | 'unverified'
+  | 'resident_stated'
+  | 'scenario_verified'
+  | 'future_system_verified'
+  | 'disputed';
 export type SupportOptionStatus = 'active' | 'draft' | 'archived';
 
 // ─── Entity interfaces ────────────────────────────────────────────────────────

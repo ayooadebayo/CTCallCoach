@@ -1,10 +1,16 @@
-// Content bundle loader
-// Loads and validates versioned content for guidance cards, support options, and wording.
+// Content bundle general loader
+// Provides a version-agnostic loadContentBundle(version) API.
+// Validation is delegated to the version-specific loader which uses fs + Zod.
+//
+// IMPORTANT: Public policy cards and Acme operations cards are always stored and
+// returned separately. Never merge them into a single undifferentiated array.
 
+import { loadV1ContentBundle, type V1ContentBundle } from './loaders/v1.js';
 import type {
   GuidanceCardContent,
   SupportOptionContent,
   WordingTemplateContent,
+  WarningContent,
 } from '@ctcc/shared-schemas';
 
 export interface ContentBundle {
@@ -18,35 +24,29 @@ export interface ContentBundle {
   warnings: WarningContent[];
 }
 
-export interface WarningContent {
-  code: string;
-  severity: 'informational' | 'caution' | 'high_risk';
-  message: string;
-  applicable_contexts: string[];
-}
-
-export async function loadContentBundle(version: string): Promise<ContentBundle> {
-  const [publicPolicyCards, acmeOperationsCards, supportOptions, wordingTemplates, warnings] =
-    await Promise.all([
-      import(`./versions/${version}/public-policy/guidance-cards.json`, {
-        assert: { type: 'json' },
-      }),
-      import(`./versions/${version}/acme-operations/guidance-cards.json`, {
-        assert: { type: 'json' },
-      }),
-      import(`./versions/${version}/support-options/catalog.json`, { assert: { type: 'json' } }),
-      import(`./versions/${version}/wording/templates.json`, { assert: { type: 'json' } }),
-      import(`./versions/${version}/warnings/catalog.json`, { assert: { type: 'json' } }),
-    ]);
-
+function toBundle(version: string, b: V1ContentBundle): ContentBundle {
   return {
     version,
     guidance_cards: {
-      public_policy: publicPolicyCards.default as GuidanceCardContent[],
-      acme_operations: acmeOperationsCards.default as GuidanceCardContent[],
+      public_policy: b.publicPolicyGuidanceCards,
+      acme_operations: b.acmeOperationsGuidanceCards,
     },
-    support_options: supportOptions.default as SupportOptionContent[],
-    wording_templates: wordingTemplates.default as WordingTemplateContent[],
-    warnings: warnings.default as WarningContent[],
+    support_options: b.supportOptions,
+    wording_templates: b.wordingTemplates,
+    warnings: b.warnings,
   };
+}
+
+/**
+ * Load a named version of the content bundle.
+ * Results are cached after first load. Pass force=true to invalidate.
+ * Throws if the version is unknown or any file fails validation.
+ */
+export function loadContentBundle(version: string, force = false): ContentBundle {
+  switch (version) {
+    case 'v1':
+      return toBundle('v1', loadV1ContentBundle(force));
+    default:
+      throw new Error(`Unknown content bundle version: "${version}". Supported: v1`);
+  }
 }

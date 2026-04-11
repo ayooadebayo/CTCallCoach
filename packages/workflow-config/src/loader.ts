@@ -1,6 +1,11 @@
-// Workflow config loader — loads and validates a versioned config bundle.
-// The workflow engine calls this on startup to load the active version.
+// Workflow config general loader
+// Provides a version-agnostic loadWorkflowConfig(version) API for the workflow engine.
+// Validation is delegated to the version-specific loader which uses fs + Zod.
+//
+// Add future version loaders alongside v1 and extend the switch below.
 
+import { loadV1WorkflowConfig, type V1WorkflowConfig } from './loaders/v1.js';
+import type { PathRule } from '@ctcc/shared-schemas';
 import type {
   EnquiryTypeConfig,
   QuestionStepConfig,
@@ -15,41 +20,35 @@ export interface WorkflowConfigBundle {
   enquiry_types: EnquiryTypeConfig[];
   question_steps: QuestionStepConfig[];
   classification_rules: ClassificationRule[];
-  path_rules: Record<string, unknown>[];
+  path_rules: PathRule[];
   support_rules: SupportTriggerRule[];
   escalation_rules: EscalationTriggerRule[];
   outcome_rules: OutcomeRule[];
 }
 
-export async function loadWorkflowConfig(version: string): Promise<WorkflowConfigBundle> {
-  // Dynamic import of JSON config files for the requested version.
-  // Validation via shared-schemas happens here before returning.
-  const [
-    enquiryTypes,
-    questionSteps,
-    classificationRules,
-    pathRules,
-    supportRules,
-    escalationRules,
-    outcomeRules,
-  ] = await Promise.all([
-    import(`./versions/${version}/enquiry-types.json`, { assert: { type: 'json' } }),
-    import(`./versions/${version}/question-steps.json`, { assert: { type: 'json' } }),
-    import(`./versions/${version}/classification-rules.json`, { assert: { type: 'json' } }),
-    import(`./versions/${version}/path-rules.json`, { assert: { type: 'json' } }),
-    import(`./versions/${version}/support-rules.json`, { assert: { type: 'json' } }),
-    import(`./versions/${version}/escalation-rules.json`, { assert: { type: 'json' } }),
-    import(`./versions/${version}/outcome-rules.json`, { assert: { type: 'json' } }),
-  ]);
-
+function toBundle(version: string, cfg: V1WorkflowConfig): WorkflowConfigBundle {
   return {
     version,
-    enquiry_types: enquiryTypes.default as EnquiryTypeConfig[],
-    question_steps: questionSteps.default as QuestionStepConfig[],
-    classification_rules: classificationRules.default as ClassificationRule[],
-    path_rules: pathRules.default as Record<string, unknown>[],
-    support_rules: supportRules.default as SupportTriggerRule[],
-    escalation_rules: escalationRules.default as EscalationTriggerRule[],
-    outcome_rules: outcomeRules.default as OutcomeRule[],
+    enquiry_types: cfg.enquiryTypes,
+    question_steps: cfg.questionSteps,
+    classification_rules: cfg.classificationRules,
+    path_rules: cfg.pathRules,
+    support_rules: cfg.supportRules,
+    escalation_rules: cfg.escalationRules,
+    outcome_rules: cfg.outcomeRules,
   };
+}
+
+/**
+ * Load a named version of the workflow config.
+ * Results are cached after first load. Pass force=true to invalidate.
+ * Throws if the version is unknown or any file fails validation.
+ */
+export function loadWorkflowConfig(version: string, force = false): WorkflowConfigBundle {
+  switch (version) {
+    case 'v1':
+      return toBundle('v1', loadV1WorkflowConfig(force));
+    default:
+      throw new Error(`Unknown workflow config version: "${version}". Supported: v1`);
+  }
 }

@@ -43,6 +43,14 @@ export const WordingTemplateContentSchema = z.object({
   prohibited_use_notes: z.string().optional(),
 });
 
+export const WarningContentSchema = z.object({
+  code: z.string().min(1),
+  severity: z.enum(['informational', 'caution', 'high_risk']),
+  message: z.string().min(1),
+  applicable_contexts: z.array(z.string()).optional(),
+});
+
 export type GuidanceCardContent = z.infer<typeof GuidanceCardContentSchema>;
 export type SupportOptionContent = z.infer<typeof SupportOptionContentSchema>;
+export type WarningContent = z.infer<typeof WarningContentSchema>;
 export type WordingTemplateContent = z.infer<typeof WordingTemplateContentSchema>;

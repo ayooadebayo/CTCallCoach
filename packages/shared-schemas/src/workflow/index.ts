@@ -76,9 +76,31 @@ export const OutcomeRuleSchema = z.object({
   ),
 });
 
+export const PathRuleSchema = z.object({
+  rule_code: z.string().min(1),
+  description: z.string(),
+  from_path: z.enum(['PD1', 'PD2', 'PD3', 'PD4', 'PD5', 'PD6', 'PD7', 'PD8']).nullable(),
+  to_path: z.enum(['PD1', 'PD2', 'PD3', 'PD4', 'PD5', 'PD6', 'PD7', 'PD8']),
+  trigger_conditions: z.record(z.unknown()),
+  next_stage: z.enum([
+    'intake',
+    'classification',
+    'fact_gathering',
+    'path_determination',
+    'support_and_explanation',
+    'escalation_review',
+    'wrap_up',
+    'closed',
+  ]),
+  guidance_card_codes: z.array(z.string()).optional(),
+  support_check_codes: z.array(z.string()).optional(),
+  escalation_check_codes: z.array(z.string()).optional(),
+});
+
 export type EnquiryTypeConfig = z.infer<typeof EnquiryTypeConfigSchema>;
 export type QuestionStepConfig = z.infer<typeof QuestionStepConfigSchema>;
 export type ClassificationRule = z.infer<typeof ClassificationRuleSchema>;
 export type SupportTriggerRule = z.infer<typeof SupportTriggerRuleSchema>;
 export type EscalationTriggerRule = z.infer<typeof EscalationTriggerRuleSchema>;
+export type PathRule = z.infer<typeof PathRuleSchema>;
 export type OutcomeRule = z.infer<typeof OutcomeRuleSchema>;

@@ -668,6 +668,7 @@ model GuidanceCardView {
 
 model SuggestedWording {
   id                   String           @id @default(uuid())
+  code                 String?          @unique
   context_code         String
   tone_type            String
   text                 String
