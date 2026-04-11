@@ -7,7 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { z } from 'zod';
+import type { ZodType } from 'zod';
 import {
   EnquiryTypeConfigSchema,
   QuestionStepConfigSchema,
@@ -29,7 +29,7 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 // Go up two levels from {src|dist}/loaders/ to reach package root, then into src/versions/v1/
 const V1_DIR = join(_dir, '../../src/versions/v1');
 
-function loadAndValidate<T>(filename: string, schema: z.ZodType<T>): T {
+function loadAndValidate<T>(filename: string, schema: ZodType<T>): T {
   const raw: unknown = JSON.parse(readFileSync(join(V1_DIR, filename), 'utf-8'));
   const result = schema.safeParse(raw);
   if (!result.success) {
@@ -61,19 +61,19 @@ export function loadV1WorkflowConfig(force = false): V1WorkflowConfig {
   if (_cache !== null && !force) return _cache;
 
   _cache = {
-    enquiryTypes: loadAndValidate('enquiry-types.json', z.array(EnquiryTypeConfigSchema)),
-    questionSteps: loadAndValidate('question-steps.json', z.array(QuestionStepConfigSchema)),
+    enquiryTypes: loadAndValidate('enquiry-types.json', EnquiryTypeConfigSchema.array()),
+    questionSteps: loadAndValidate('question-steps.json', QuestionStepConfigSchema.array()),
     classificationRules: loadAndValidate(
       'classification-rules.json',
-      z.array(ClassificationRuleSchema),
+      ClassificationRuleSchema.array(),
     ),
-    pathRules: loadAndValidate('path-rules.json', z.array(PathRuleSchema)),
-    supportRules: loadAndValidate('support-rules.json', z.array(SupportTriggerRuleSchema)),
+    pathRules: loadAndValidate('path-rules.json', PathRuleSchema.array()),
+    supportRules: loadAndValidate('support-rules.json', SupportTriggerRuleSchema.array()),
     escalationRules: loadAndValidate(
       'escalation-rules.json',
-      z.array(EscalationTriggerRuleSchema),
+      EscalationTriggerRuleSchema.array(),
     ),
-    outcomeRules: loadAndValidate('outcome-rules.json', z.array(OutcomeRuleSchema)),
+    outcomeRules: loadAndValidate('outcome-rules.json', OutcomeRuleSchema.array()),
   };
 
   return _cache;

@@ -6,7 +6,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { z } from 'zod';
+import type { ZodType } from 'zod';
 import {
   GuidanceCardContentSchema,
   SupportOptionContentSchema,
@@ -22,7 +22,7 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 // Goes up two levels from {src|dist}/loaders/ to package root, then into src/versions/v1/
 const V1_DIR = join(_dir, '../../src/versions/v1');
 
-function loadAndValidate<T>(relPath: string, schema: z.ZodType<T>): T {
+function loadAndValidate<T>(relPath: string, schema: ZodType<T>): T {
   const raw: unknown = JSON.parse(readFileSync(join(V1_DIR, relPath), 'utf-8'));
   const result = schema.safeParse(raw);
   if (!result.success) {
@@ -55,21 +55,21 @@ export function loadV1ContentBundle(force = false): V1ContentBundle {
   _cache = {
     publicPolicyGuidanceCards: loadAndValidate(
       'public-policy/guidance-cards.json',
-      z.array(GuidanceCardContentSchema),
+      GuidanceCardContentSchema.array(),
     ),
     acmeOperationsGuidanceCards: loadAndValidate(
       'acme-operations/guidance-cards.json',
-      z.array(GuidanceCardContentSchema),
+      GuidanceCardContentSchema.array(),
     ),
     supportOptions: loadAndValidate(
       'support-options/catalog.json',
-      z.array(SupportOptionContentSchema),
+      SupportOptionContentSchema.array(),
     ),
     wordingTemplates: loadAndValidate(
       'wording/templates.json',
-      z.array(WordingTemplateContentSchema),
+      WordingTemplateContentSchema.array(),
     ),
-    warnings: loadAndValidate('warnings/catalog.json', z.array(WarningContentSchema)),
+    warnings: loadAndValidate('warnings/catalog.json', WarningContentSchema.array()),
   };
 
   return _cache;
