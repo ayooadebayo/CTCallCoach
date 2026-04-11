@@ -5,7 +5,11 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@ctcc/shared-types": ["../../packages/shared-types/src/index.ts"],
+      "@ctcc/shared-schemas": ["../../packages/shared-schemas/src/index.ts"],
+      "@ctcc/workflow-config": ["../../packages/workflow-config/src/index.ts"],
+      "@ctcc/content-bundles": ["../../packages/content-bundles/src/index.ts"]
     }
   },
   "include": ["src"],
