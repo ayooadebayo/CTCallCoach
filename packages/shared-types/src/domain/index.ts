@@ -124,6 +124,15 @@ export type QAReviewStatus = 'pending' | 'completed' | 'calibrated' | 'reopened'
 
 export type VersionStatus = 'draft' | 'active' | 'superseded' | 'archived';
 
+export type Confidence = 'low' | 'medium' | 'high';
+export type IntentSignalSource =
+  | 'caller_stated'
+  | 'scenario_seed'
+  | 'agent_inferred'
+  | 'future_transcript_inference';
+export type EvidenceStatus = 'captured' | 'verified' | 'disputed' | 'withdrawn';
+export type SupportOptionStatus = 'active' | 'draft' | 'archived';
+
 // ─── Entity interfaces ────────────────────────────────────────────────────────
 
 export interface Agent {
@@ -253,7 +262,7 @@ export interface SupportOption {
   category: SupportOptionCategory;
   resident_explanation: string;
   internal_handling_note: string;
-  status: 'active' | 'draft' | 'archived';
+  status: SupportOptionStatus;
   created_at: string;
   updated_at: string;
   requires_specialist_follow_up?: boolean;
@@ -279,7 +288,7 @@ export interface VulnerabilitySignal {
   call_session_id: string;
   category: VulnerabilityCategory;
   source: VulnerabilitySource;
-  confidence: 'low' | 'medium' | 'high';
+  confidence: Confidence;
   requires_sensitive_handling: boolean;
   created_at: string;
   resident_stated_text?: string;
@@ -339,4 +348,118 @@ export interface PromptVersion {
   published_at: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface IntentSignal {
+  id: string;
+  call_session_id: string;
+  enquiry_type_code: EnquiryTypeCode;
+  source: IntentSignalSource;
+  confidence: Confidence;
+  raw_signal_text: string;
+  created_at: string;
+  resolved_at?: string;
+}
+
+export interface QuestionResponse {
+  id: string;
+  call_session_id: string;
+  question_step_id: string;
+  status: ResponseStatus;
+  source: ResponseSource;
+  created_at: string;
+  updated_at: string;
+  text_value?: string;
+  selected_options_json?: string[];
+  numeric_value?: number;
+  boolean_value?: boolean;
+  date_value?: string;
+  override_reason?: string;
+}
+
+export interface DecisionPointResult {
+  id: string;
+  call_session_id: string;
+  decision_type: DecisionType;
+  rule_code: string;
+  result_status: DecisionResultStatus;
+  trigger_facts_json: Record<string, unknown>;
+  workflow_version_id: string;
+  evaluated_at: string;
+  result_payload_json?: Record<string, unknown>;
+  override_reason?: string;
+}
+
+export interface GuidanceCardView {
+  id: string;
+  call_session_id: string;
+  guidance_card_id: string;
+  view_type: GuidanceCardViewType;
+  viewed_at: string;
+  dismissed_at?: string;
+}
+
+export interface SurfacedSupportOption {
+  id: string;
+  call_session_id: string;
+  support_option_id: string;
+  state: SurfacedSupportOptionState;
+  trigger_rule_code: string;
+  surfaced_at: string;
+  updated_at: string;
+  agent_notes?: string;
+  outcome_notes?: string;
+}
+
+export interface SuggestedWording {
+  id: string;
+  call_session_id: string;
+  stage: SessionStage;
+  wording_text: string;
+  source_type: WordingSourceType;
+  status: WordingStatus;
+  created_at: string;
+  content_version_id?: string;
+  prompt_version_id?: string;
+  template_code?: string;
+  confidence?: Confidence;
+  dismissed_at?: string;
+}
+
+export interface EvidenceRecord {
+  id: string;
+  call_session_id: string;
+  resident_id: string;
+  evidence_type: EvidenceType;
+  status: EvidenceStatus;
+  recorded_at: string;
+  captured_from_question_response_id?: string;
+  description_text?: string;
+  reference_value?: string;
+}
+
+export interface CompetencySignal {
+  id: string;
+  agent_id: string;
+  signal_type: CompetencySignalType;
+  source: CompetencySignalSource;
+  signal_text: string;
+  created_at: string;
+  call_session_id?: string;
+  competency_tag?: string;
+  score_delta?: number;
+}
+
+export interface QAReview {
+  id: string;
+  call_session_id: string;
+  reviewer_id: string;
+  status: QAReviewStatus;
+  created_at: string;
+  updated_at: string;
+  overall_score?: number;
+  completed_at?: string;
+  calibration_notes?: string;
+  dimension_scores_json?: Record<string, number>;
+  improvement_notes?: string;
 }

@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
 // Single shared Prisma client instance for the API process.
-// See apps/api/src/db/schema/ for Prisma schema definitions.
-// See apps/api/src/db/migrations/ for migration history.
+// See apps/api/prisma/schema.prisma for the Prisma schema.
+// See apps/api/prisma/migrations/ for migration history.
 // See apps/api/src/db/seeds/ for seeding scripts.
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };

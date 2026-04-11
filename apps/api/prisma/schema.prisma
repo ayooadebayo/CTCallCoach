@@ -1,0 +1,903 @@
+// Prisma Schema — Council Tax Call Coach MVP
+// Source of truth: docs/council_tax_call_coach_domain_model_and_data_schema_v_0.md
+//
+// Tables: agents, residents, scenarios, enquiry_types,
+//         workflow_versions, content_versions, prompt_versions,
+//         call_sessions, intent_signals,
+//         question_step_definitions, question_responses,
+//         decision_point_results,
+//         guidance_cards, guidance_card_views,
+//         support_options, surfaced_support_options,
+//         escalation_flags, vulnerability_signals,
+//         suggested_wording,
+//         call_outcomes, case_notes, evidence_records,
+//         competency_signals, qa_reviews, analytics_events
+//
+// Run from apps/api/:
+//   pnpm db:migrate   — generate + apply migration (dev)
+//   pnpm db:generate  — regenerate Prisma client after schema change
+//   pnpm db:seed      — seed versions, enquiry types, scenarios, content
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum AgentRole {
+  agent
+  revenues_adviser
+  team_lead
+  qa_coach
+  admin
+}
+
+enum AgentStatus {
+  active
+  training
+  restricted
+  inactive
+}
+
+enum CallerRole {
+  account_holder
+  representative
+  unknown
+}
+
+enum AuthStatus {
+  unknown
+  partial
+  authenticated
+  authenticated_via_representative
+}
+
+enum DataOrigin {
+  synthetic
+  mocked_live_like
+  future_live
+}
+
+enum ScenarioStatus {
+  draft
+  active
+  archived
+}
+
+enum SessionMode {
+  demo_guided
+  scenario_replay
+  manual_test
+  future_live_call
+}
+
+enum SessionStage {
+  intake
+  classification
+  fact_gathering
+  path_determination
+  support_and_explanation
+  escalation_review
+  wrap_up
+  closed
+}
+
+enum ClassificationStatus {
+  unclassified
+  provisional
+  confirmed
+  overridden
+}
+
+enum EnquiryTypeCode {
+  PD1
+  PD2
+  PD3
+  PD4
+  PD5
+  PD6
+  PD7
+  PD8
+}
+
+enum EnquiryTypeStatus {
+  active
+  deprecated
+  draft
+}
+
+enum QuestionType {
+  single_select
+  multi_select
+  free_text
+  boolean
+  numeric
+  date
+}
+
+enum ResponseStatus {
+  answered
+  skipped
+  not_applicable
+  overridden
+}
+
+enum ResponseSource {
+  agent_input
+  scenario_seed
+  future_transcript_inference
+  system_default
+}
+
+enum DecisionType {
+  classification
+  path_selection
+  support_trigger
+  escalation_trigger
+  outcome_constraint
+  warning_trigger
+}
+
+enum DecisionResultStatus {
+  evaluated
+  pending
+  superseded
+}
+
+enum SourceDomain {
+  public_policy
+  acme_operations
+}
+
+enum GuidanceCardStatus {
+  active
+  draft
+  archived
+}
+
+enum GuidanceCardViewType {
+  auto_surfaced
+  manually_opened
+  pinned
+}
+
+enum SupportOptionCategory {
+  payment_difficulty
+  council_tax_reduction_signpost
+  discount_exemption_signpost
+  debt_advice
+  specialist_review
+  communication_support
+}
+
+enum SupportOptionStatus {
+  active
+  draft
+  archived
+}
+
+enum SurfacedSupportState {
+  surfaced
+  discussed
+  offered
+  accepted
+  declined
+  referred
+}
+
+enum EscalationCategory {
+  higher_risk_recovery_stage
+  liability_dispute
+  representation_unclear
+  vulnerability_sensitive
+  breathing_space_related
+  specialist_review_required
+}
+
+enum EscalationSeverity {
+  low
+  medium
+  high
+  critical
+}
+
+enum EscalationState {
+  raised
+  acknowledged
+  routed
+  resolved
+}
+
+enum VulnerabilityCategory {
+  physical_health
+  mental_health
+  disability_or_access_need
+  bereavement
+  caring_responsibility
+  learning_or_cognitive_need
+  language_or_communication_difficulty
+  acute_financial_crisis
+  third_party_support_dependency
+  other_crisis
+}
+
+enum VulnerabilitySource {
+  resident_stated
+  scenario_seed
+  agent_selected
+  future_system_flag
+}
+
+enum WordingSourceType {
+  curated
+  generated
+  templated
+}
+
+enum WordingStatus {
+  active
+  draft
+  retired
+}
+
+enum PrimaryOutcomeCode {
+  info_only
+  support_signposted
+  specialist_review_referred
+  debt_advice_signposted
+  vulnerability_flag_raised
+  callback_required
+  pending_further_evidence
+  redirected
+}
+
+enum OutcomeDisposition {
+  completed
+  pending
+  escalated
+  redirected
+}
+
+enum CaseNoteStatus {
+  draft
+  accepted
+  edited
+  locked
+}
+
+enum EvidenceType {
+  account_reference
+  notice_stage_statement
+  benefit_or_income_statement
+  support_worker_or_representative_statement
+  communication_need_statement
+  other_fact
+}
+
+enum EvidenceStatus {
+  unverified
+  resident_stated
+  scenario_verified
+  future_system_verified
+  disputed
+}
+
+enum CompetencySignalType {
+  positive
+  negative
+  neutral
+  trend
+}
+
+enum CompetencySignalSource {
+  workflow_rules
+  qa_review
+  coaching_engine
+}
+
+enum QAReviewStatus {
+  pending
+  completed
+  calibrated
+  reopened
+}
+
+enum VersionStatus {
+  draft
+  active
+  superseded
+  archived
+}
+
+enum Confidence {
+  low
+  medium
+  high
+}
+
+enum IntentSignalSource {
+  agent_selected
+  typed_note
+  scenario_seed
+  future_transcript
+  workflow_inference
+}
+
+// ─── Version tables ───────────────────────────────────────────────────────────
+// Every call session records which versions of workflow, content, and prompts
+// were active when it ran. This enables traceability and safe rollback.
+
+model WorkflowVersion {
+  id             String        @id @default(uuid())
+  version_label  String        @unique
+  status         VersionStatus @default(draft)
+  description    String?
+  change_summary String?
+  published_at   DateTime?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  call_sessions          CallSession[]
+  question_step_defs     QuestionStepDefinition[]
+  decision_point_results DecisionPointResult[]
+  analytics_events       AnalyticsEvent[]
+
+  @@map("workflow_versions")
+}
+
+model ContentVersion {
+  id             String        @id @default(uuid())
+  version_label  String        @unique
+  status         VersionStatus @default(draft)
+  description    String?
+  change_summary String?
+  published_at   DateTime?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  call_sessions     CallSession[]
+  guidance_cards    GuidanceCard[]
+  suggested_wording SuggestedWording[]
+  analytics_events  AnalyticsEvent[]
+
+  @@map("content_versions")
+}
+
+model PromptVersion {
+  id             String        @id @default(uuid())
+  version_label  String        @unique
+  status         VersionStatus @default(draft)
+  description    String?
+  change_summary String?
+  published_at   DateTime?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  call_sessions    CallSession[]
+  analytics_events AnalyticsEvent[]
+
+  @@map("prompt_versions")
+}
+
+// ─── Reference / config tables ────────────────────────────────────────────────
+
+model EnquiryType {
+  id             String            @id @default(uuid())
+  code           EnquiryTypeCode   @unique
+  label          String
+  description    String
+  category       String
+  is_overlay     Boolean           @default(false)
+  parent_code    EnquiryTypeCode?
+  sort_order     Int?
+  handling_notes String?
+  status         EnquiryTypeStatus @default(active)
+  version        String
+  created_at     DateTime          @default(now())
+  updated_at     DateTime          @updatedAt
+
+  @@map("enquiry_types")
+}
+
+// ─── Core operational entities ────────────────────────────────────────────────
+
+model Agent {
+  id            String      @id @default(uuid())
+  display_name  String
+  role          AgentRole
+  team          String
+  skill_level   Int         @default(1)
+  status        AgentStatus @default(active)
+  email         String?     @unique
+  coach_id      String?
+  tenure_weeks  Int?
+  qa_band       String?
+  feature_flags Json?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+
+  call_sessions      CallSession[]
+  competency_signals CompetencySignal[]
+  qa_reviews_given   QAReview[]         @relation("ReviewerReviews")
+
+  @@map("agents")
+}
+
+model Resident {
+  id                          String     @id @default(uuid())
+  display_label               String
+  caller_role                 CallerRole @default(unknown)
+  authentication_status       AuthStatus @default(unknown)
+  data_origin                 DataOrigin @default(synthetic)
+  account_reference           String?
+  liable_party_name           String?
+  address_line_1              String?
+  postcode                    String?
+  contact_phone               String?
+  contact_email               String?
+  preferred_contact_method    String?
+  communication_needs         String?
+  representative_name         String?
+  representative_relationship String?
+  known_support_flags         String[]
+  notes_summary               String?
+  created_at                  DateTime   @default(now())
+  updated_at                  DateTime   @updatedAt
+
+  call_sessions         CallSession[]
+  vulnerability_signals VulnerabilitySignal[]
+  evidence_records      EvidenceRecord[]
+
+  @@map("residents")
+}
+
+model Scenario {
+  id                           String             @id @default(uuid())
+  title                        String
+  description                  String
+  scenario_type                String
+  resident_profile_json        Json
+  account_context_json         Json
+  expected_primary_path        EnquiryTypeCode
+  expected_overlay_paths_json  Json?
+  expected_outcome_code        PrimaryOutcomeCode?
+  expected_escalation_codes_json Json?
+  expected_support_codes_json  Json?
+  difficulty_level             Int?
+  tags                         String[]
+  seed_transcript              String?
+  status                       ScenarioStatus     @default(draft)
+  created_at                   DateTime           @default(now())
+  updated_at                   DateTime           @updatedAt
+
+  call_sessions CallSession[]
+
+  @@map("scenarios")
+}
+
+// ─── Call Session (central hub) ───────────────────────────────────────────────
+
+model CallSession {
+  id                      String               @id @default(uuid())
+  agent_id                String
+  resident_id             String
+  scenario_id             String?
+  session_mode            SessionMode          @default(demo_guided)
+  stage                   SessionStage         @default(intake)
+  classification_status   ClassificationStatus @default(unclassified)
+  current_path_code       EnquiryTypeCode?
+  overlay_path_codes_json Json?
+  call_channel            String?
+  session_confidence_score Float?
+  agent_notes_draft       String?
+  end_reason              String?
+  workflow_version_id     String
+  content_version_id      String
+  prompt_version_id       String
+  started_at              DateTime             @default(now())
+  ended_at                DateTime?
+  created_at              DateTime             @default(now())
+  updated_at              DateTime             @updatedAt
+
+  agent            Agent           @relation(fields: [agent_id], references: [id])
+  resident         Resident        @relation(fields: [resident_id], references: [id])
+  scenario         Scenario?       @relation(fields: [scenario_id], references: [id])
+  workflow_version WorkflowVersion @relation(fields: [workflow_version_id], references: [id])
+  content_version  ContentVersion  @relation(fields: [content_version_id], references: [id])
+  prompt_version   PromptVersion   @relation(fields: [prompt_version_id], references: [id])
+
+  intent_signals           IntentSignal[]
+  question_responses       QuestionResponse[]
+  decision_point_results   DecisionPointResult[]
+  guidance_card_views      GuidanceCardView[]
+  surfaced_support_options SurfacedSupportOption[]
+  escalation_flags         EscalationFlag[]
+  vulnerability_signals    VulnerabilitySignal[]
+  evidence_records         EvidenceRecord[]
+  competency_signals       CompetencySignal[]
+  analytics_events         AnalyticsEvent[]
+  call_outcome             CallOutcome?
+  case_note                CaseNote?
+  qa_review                QAReview?
+
+  @@index([agent_id])
+  @@index([stage])
+  @@index([started_at])
+  @@map("call_sessions")
+}
+
+// ─── Within-session event / fact entities ─────────────────────────────────────
+
+model IntentSignal {
+  id                 String            @id @default(uuid())
+  call_session_id    String
+  signal_type        String
+  signal_value       String
+  source             IntentSignalSource
+  confidence         Confidence        @default(medium)
+  raw_text_snippet   String?
+  detected_by        String?
+  dismissed_by_agent Boolean           @default(false)
+  created_at         DateTime          @default(now())
+
+  call_session CallSession @relation(fields: [call_session_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("intent_signals")
+}
+
+model QuestionStepDefinition {
+  id                      String       @id @default(uuid())
+  code                    String
+  stage                   SessionStage
+  question_text           String
+  question_type           QuestionType
+  mandatory               Boolean      @default(true)
+  active                  Boolean      @default(true)
+  why_it_matters_text     String?
+  help_text               String?
+  sensitivity_warning     String?
+  answer_options_json     Json?
+  trigger_conditions_json Json?
+  skip_conditions_json    Json?
+  sort_order              Int?
+  workflow_version_id     String
+  created_at              DateTime     @default(now())
+  updated_at              DateTime     @updatedAt
+
+  workflow_version   WorkflowVersion  @relation(fields: [workflow_version_id], references: [id])
+  question_responses QuestionResponse[]
+
+  @@unique([code, workflow_version_id])
+  @@map("question_step_definitions")
+}
+
+model QuestionResponse {
+  id                          String         @id @default(uuid())
+  call_session_id             String
+  question_step_definition_id String
+  response_status             ResponseStatus
+  answer_text                 String?
+  answer_boolean              Boolean?
+  answer_number               Float?
+  answer_json                 Json?
+  captured_by                 String?
+  confidence                  Confidence?
+  source                      ResponseSource @default(agent_input)
+  created_at                  DateTime       @default(now())
+  updated_at                  DateTime       @updatedAt
+
+  call_session             CallSession            @relation(fields: [call_session_id], references: [id])
+  question_step_definition QuestionStepDefinition @relation(fields: [question_step_definition_id], references: [id])
+  evidence_records         EvidenceRecord[]
+
+  @@index([call_session_id])
+  @@map("question_responses")
+}
+
+model DecisionPointResult {
+  id                   String               @id @default(uuid())
+  call_session_id      String
+  decision_code        String
+  decision_type        DecisionType
+  result_status        DecisionResultStatus @default(evaluated)
+  triggered            Boolean              @default(false)
+  trigger_facts_json   Json?
+  result_payload_json  Json?
+  trace_text           String?
+  confidence           Confidence?
+  workflow_version_id  String
+  created_at           DateTime             @default(now())
+
+  call_session     CallSession     @relation(fields: [call_session_id], references: [id])
+  workflow_version WorkflowVersion @relation(fields: [workflow_version_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("decision_point_results")
+}
+
+// ─── Guidance / content entities ──────────────────────────────────────────────
+// source_domain distinguishes public_policy from acme_operations on every card.
+
+model GuidanceCard {
+  id                      String             @id @default(uuid())
+  code                    String
+  title                   String
+  summary                 String
+  source_domain           SourceDomain
+  body_markdown           String?
+  do_say_text             String?
+  do_not_say_text         String?
+  warning_text            String?
+  applicable_contexts_json Json?
+  source_reference_url    String?
+  tags                    String[]
+  status                  GuidanceCardStatus @default(active)
+  content_version_id      String
+  created_at              DateTime           @default(now())
+  updated_at              DateTime           @updatedAt
+
+  content_version ContentVersion   @relation(fields: [content_version_id], references: [id])
+  views           GuidanceCardView[]
+
+  @@unique([code, content_version_id])
+  @@index([source_domain])
+  @@map("guidance_cards")
+}
+
+model GuidanceCardView {
+  id               String               @id @default(uuid())
+  call_session_id  String
+  guidance_card_id String
+  view_type        GuidanceCardViewType
+  trigger_code     String?
+  display_context  String?
+  created_at       DateTime             @default(now())
+
+  call_session  CallSession  @relation(fields: [call_session_id], references: [id])
+  guidance_card GuidanceCard @relation(fields: [guidance_card_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("guidance_card_views")
+}
+
+model SuggestedWording {
+  id                   String           @id @default(uuid())
+  context_code         String
+  tone_type            String
+  text                 String
+  source_type          WordingSourceType
+  status               WordingStatus    @default(active)
+  reading_level        String?
+  prohibited_use_notes String?
+  applicable_contexts_json Json?
+  content_version_id   String?
+  prompt_version_id    String?
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+
+  content_version ContentVersion? @relation(fields: [content_version_id], references: [id])
+
+  @@map("suggested_wording")
+}
+
+// ─── Support and escalation entities ─────────────────────────────────────────
+
+model SupportOption {
+  id                        String                @id @default(uuid())
+  code                      String                @unique
+  label                     String
+  category                  SupportOptionCategory
+  resident_explanation      String
+  internal_handling_note    String
+  requires_specialist_follow_up Boolean           @default(false)
+  source_domain             SourceDomain?
+  urgency                   String?
+  handoff_target            String?
+  trigger_conditions_json   Json?
+  status                    SupportOptionStatus   @default(active)
+  created_at                DateTime              @default(now())
+  updated_at                DateTime              @updatedAt
+
+  surfaced_instances SurfacedSupportOption[]
+
+  @@map("support_options")
+}
+
+model SurfacedSupportOption {
+  id                String               @id @default(uuid())
+  call_session_id   String
+  support_option_id String
+  state             SurfacedSupportState @default(surfaced)
+  trigger_code      String?
+  notes             String?
+  accepted_by_resident Boolean?
+  created_at        DateTime             @default(now())
+
+  call_session   CallSession   @relation(fields: [call_session_id], references: [id])
+  support_option SupportOption @relation(fields: [support_option_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("surfaced_support_options")
+}
+
+model EscalationFlag {
+  id                   String             @id @default(uuid())
+  call_session_id      String
+  code                 String
+  category             EscalationCategory
+  severity             EscalationSeverity
+  state                EscalationState    @default(raised)
+  reason_text          String
+  trigger_facts_json   Json?
+  handoff_target       String?
+  sla_band             String?
+  resident_wording_text String?
+  evidence_gap_text    String?
+  created_at           DateTime           @default(now())
+
+  call_session CallSession @relation(fields: [call_session_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("escalation_flags")
+}
+
+model VulnerabilitySignal {
+  id                            String                @id @default(uuid())
+  call_session_id               String
+  resident_id                   String?
+  category                      VulnerabilityCategory
+  source                        VulnerabilitySource
+  confidence                    Confidence            @default(medium)
+  requires_sensitive_handling   Boolean               @default(true)
+  resident_stated_text          String?
+  temporary_or_ongoing          String?
+  consent_to_record_detail      Boolean?
+  specialist_review_recommended Boolean?
+  created_at                    DateTime              @default(now())
+
+  call_session CallSession @relation(fields: [call_session_id], references: [id])
+  resident     Resident?   @relation(fields: [resident_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("vulnerability_signals")
+}
+
+// ─── Wrap-up entities ─────────────────────────────────────────────────────────
+
+model CallOutcome {
+  id                        String             @id @default(uuid())
+  call_session_id           String             @unique
+  primary_outcome_code      PrimaryOutcomeCode
+  disposition               OutcomeDisposition
+  owner_next_step           String
+  secondary_outcome_codes_json Json?
+  callback_required         Boolean            @default(false)
+  follow_up_due_at          DateTime?
+  resident_commitment_text  String?
+  internal_action_text      String?
+  created_at                DateTime           @default(now())
+  updated_at                DateTime           @updatedAt
+
+  call_session CallSession @relation(fields: [call_session_id], references: [id])
+
+  @@map("call_outcomes")
+}
+
+model CaseNote {
+  id                    String         @id @default(uuid())
+  call_session_id       String         @unique
+  summary_text          String
+  facts_json            Json
+  actions_json          Json
+  resident_commitments_json Json?
+  follow_up_json        Json?
+  editing_history_json  Json?
+  ai_generated_draft    Boolean        @default(false)
+  status                CaseNoteStatus @default(draft)
+  created_by            String
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
+
+  call_session CallSession @relation(fields: [call_session_id], references: [id])
+
+  @@map("case_notes")
+}
+
+model EvidenceRecord {
+  id                                 String         @id @default(uuid())
+  call_session_id                    String
+  resident_id                        String?
+  captured_from_question_response_id String?
+  evidence_type                      EvidenceType
+  source                             String
+  status                             EvidenceStatus @default(unverified)
+  reference_value                    String?
+  summary_text                       String?
+  document_link_placeholder          String?
+  created_at                         DateTime       @default(now())
+
+  call_session                    CallSession       @relation(fields: [call_session_id], references: [id])
+  resident                        Resident?         @relation(fields: [resident_id], references: [id])
+  captured_from_question_response QuestionResponse? @relation(fields: [captured_from_question_response_id], references: [id])
+
+  @@index([call_session_id])
+  @@map("evidence_records")
+}
+
+// ─── QA, coaching, and analytics entities ────────────────────────────────────
+
+model CompetencySignal {
+  id               String                 @id @default(uuid())
+  agent_id         String
+  call_session_id  String?
+  signal_type      CompetencySignalType
+  dimension_code   String?
+  score_delta      Float
+  source           CompetencySignalSource
+  explanation_text String?
+  confidence       Confidence?
+  window_start     DateTime?
+  window_end       DateTime?
+  created_at       DateTime               @default(now())
+
+  agent        Agent        @relation(fields: [agent_id], references: [id])
+  call_session CallSession? @relation(fields: [call_session_id], references: [id])
+
+  @@index([agent_id])
+  @@map("competency_signals")
+}
+
+model QAReview {
+  id                     String         @id @default(uuid())
+  call_session_id        String         @unique
+  reviewer_id            String
+  rubric_version         String
+  overall_score          Float
+  classification_score   Float?
+  fact_gathering_score   Float?
+  clarity_score          Float?
+  support_handling_score Float?
+  escalation_score       Float?
+  note_quality_score     Float?
+  missed_steps_json      Json?
+  coaching_notes         String?
+  status                 QAReviewStatus @default(pending)
+  created_at             DateTime       @default(now())
+  updated_at             DateTime       @updatedAt
+
+  call_session CallSession @relation(fields: [call_session_id], references: [id])
+  reviewer     Agent       @relation("ReviewerReviews", fields: [reviewer_id], references: [id])
+
+  @@map("qa_reviews")
+}
+
+model AnalyticsEvent {
+  id                  String   @id @default(uuid())
+  event_name          String
+  occurred_at         DateTime
+  call_session_id     String
+  workflow_version_id String
+  agent_id            String?
+  scenario_id         String?
+  content_version_id  String?
+  prompt_version_id   String?
+  screen_name         String?
+  payload_json        Json?
+  created_at          DateTime @default(now())
+
+  call_session     CallSession     @relation(fields: [call_session_id], references: [id])
+  workflow_version WorkflowVersion @relation(fields: [workflow_version_id], references: [id])
+  content_version  ContentVersion? @relation(fields: [content_version_id], references: [id])
+  prompt_version   PromptVersion?  @relation(fields: [prompt_version_id], references: [id])
+
+  @@index([call_session_id])
+  @@index([event_name])
+  @@index([occurred_at])
+  @@map("analytics_events")
+}
