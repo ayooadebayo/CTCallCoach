@@ -1,0 +1,52 @@
+[
+  {
+    "rule_code": "PR_001",
+    "description": "PD1 → current-year payment difficulty path",
+    "from_path": null,
+    "to_path": "PD1",
+    "trigger_conditions": { "notice_type": "no_notice" },
+    "next_stage": "fact_gathering",
+    "guidance_card_codes": ["GC_PAYMENT_DIFFICULTY_EARLY_STAGE"],
+    "support_check_codes": ["SC_PAYMENT_DIFFICULTY"]
+  },
+  {
+    "rule_code": "PR_002",
+    "description": "PD2 → reminder-stage explanation path",
+    "from_path": null,
+    "to_path": "PD2",
+    "trigger_conditions": { "notice_type": "reminder" },
+    "next_stage": "fact_gathering",
+    "guidance_card_codes": ["GC_REMINDER_NOTICE_STAGE"],
+    "support_check_codes": ["SC_PAYMENT_DIFFICULTY", "SC_CTR_SIGNPOST"]
+  },
+  {
+    "rule_code": "PR_003",
+    "description": "PD3 → final-notice explanation path",
+    "from_path": null,
+    "to_path": "PD3",
+    "trigger_conditions": { "notice_type": "final_notice" },
+    "next_stage": "support_and_explanation",
+    "guidance_card_codes": ["GC_FINAL_NOTICE_STAGE"],
+    "support_check_codes": ["SC_PAYMENT_DIFFICULTY", "SC_CTR_SIGNPOST", "SC_SPECIALIST_REVIEW"]
+  },
+  {
+    "rule_code": "PR_004",
+    "description": "PD4 → summons/liability-order safer-handling path",
+    "from_path": null,
+    "to_path": "PD4",
+    "trigger_conditions": { "notice_type": ["summons_or_court", "liability_order"] },
+    "next_stage": "escalation_review",
+    "guidance_card_codes": ["GC_SUMMONS_LIABILITY_ORDER_STAGE"],
+    "escalation_check_codes": ["EC_HIGHER_RISK_RECOVERY"]
+  },
+  {
+    "rule_code": "PR_005",
+    "description": "PD5 → existing arrears support path",
+    "from_path": null,
+    "to_path": "PD5",
+    "trigger_conditions": { "intent": ["time_to_pay", "check_available_help"] },
+    "next_stage": "support_and_explanation",
+    "guidance_card_codes": ["GC_ARREARS_HELP_ROUTE"],
+    "support_check_codes": ["SC_PAYMENT_DIFFICULTY", "SC_CTR_SIGNPOST", "SC_DEBT_ADVICE"]
+  }
+]

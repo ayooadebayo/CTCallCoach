@@ -1,0 +1,61 @@
+[
+  {
+    "code": "GC_PAYMENT_DIFFICULTY_EARLY_STAGE",
+    "title": "Payment difficulty — early stage guidance",
+    "summary": "Residents who contact early about payment difficulty should be encouraged to engage. Early contact is a positive sign and means more options are available.",
+    "source_domain": "public_policy",
+    "body_markdown": "Early contact about council tax difficulty is important. The earlier a resident contacts the authority, the more options are likely to be available. Residents are encouraged to make contact before formal recovery action begins.\n\nAt this stage the agent should:\n- acknowledge the resident's contact positively\n- explain what options may be available\n- avoid language that escalates anxiety",
+    "do_say_text": "You've done the right thing by contacting us early. There may be options available to help you at this stage.",
+    "do_not_say_text": "Do not guarantee a payment arrangement or reduction at this stage.",
+    "applicable_contexts": ["PD1"],
+    "tags": ["early_stage", "payment_difficulty", "public_policy"]
+  },
+  {
+    "code": "GC_REMINDER_NOTICE_STAGE",
+    "title": "Reminder notice — what it means",
+    "summary": "A reminder notice is issued when an instalment is missed. The resident retains the right to pay by instalments if they bring payments up to date within the period stated on the notice.",
+    "source_domain": "public_policy",
+    "body_markdown": "When a resident has missed one or more instalments, a reminder notice will typically be issued. This gives the resident an opportunity to bring the account up to date.\n\nKey points:\n- the right to pay by instalments can be retained if payment is made promptly\n- if the resident misses another instalment after the reminder, the right to instalments may be lost\n- the agent should not promise to waive any charges without checking authority",
+    "do_say_text": "The reminder notice means you've missed a payment, but your right to pay by instalments can still be retained if you bring the account up to date.",
+    "do_not_say_text": "Do not promise to waive charges or freeze the account without authority.",
+    "warning_text": "Do not confirm or guarantee that the right to instalments will be restored without checking.",
+    "applicable_contexts": ["PD2"],
+    "tags": ["reminder", "notice", "instalments", "public_policy"]
+  },
+  {
+    "code": "GC_FINAL_NOTICE_STAGE",
+    "title": "Final notice — what it means",
+    "summary": "A final notice means the resident has lost the right to pay by instalments. The full balance for the year is now due. The agent must explain this carefully and without escalating distress.",
+    "source_domain": "public_policy",
+    "body_markdown": "A final notice is issued when a resident has received a prior reminder and has still not brought the account up to date. At this stage:\n\n- the right to pay by instalments is lost\n- the full remaining balance for the year is now due\n- if the balance is not paid, a summons may follow\n\nThe agent should:\n- explain the situation clearly and calmly\n- not cause unnecessary distress\n- identify whether a support route is relevant\n- consider whether specialist review is appropriate",
+    "do_say_text": "The final notice means the right to pay in instalments has been lost and the full balance is now due. I want to make sure I point you to the right next step.",
+    "do_not_say_text": "Do not promise to reinstate instalments without authority. Do not state that a summons will definitely follow.",
+    "warning_text": "Do not confirm or promise any arrangement at this stage without checking whether it is within first-line scope.",
+    "applicable_contexts": ["PD3"],
+    "tags": ["final_notice", "instalments_lost", "public_policy"]
+  },
+  {
+    "code": "GC_SUMMONS_LIABILITY_ORDER_STAGE",
+    "title": "Summons and liability order — safer handling required",
+    "summary": "When a resident is at summons or liability order stage, the agent must handle with extra care. Specific legal and procedural rules apply and first-line agents should not make commitments without specialist involvement.",
+    "source_domain": "public_policy",
+    "body_markdown": "At summons or liability order stage:\n\n- the authority has taken or is taking legal steps to recover the debt\n- a liability order gives the authority additional enforcement powers\n- residents must be informed clearly but without causing unnecessary distress\n- agents must not make commitments that exceed first-line authority\n\nThe agent should:\n- handle the call with care\n- explain what the stage means in plain terms\n- not promise outcomes\n- escalate to specialist review where appropriate",
+    "do_say_text": "I understand you've received a court letter. I'm going to make sure this gets to the right person who can help you properly.",
+    "do_not_say_text": "Do not promise to cancel court costs or guarantee a specific arrangement at this stage.",
+    "warning_text": "This is a higher-risk recovery stage. Do not confirm arrangements without specialist review. Consider escalation.",
+    "applicable_contexts": ["PD4"],
+    "tags": ["summons", "liability_order", "higher_risk", "public_policy"]
+  },
+  {
+    "code": "GC_BREATHING_SPACE",
+    "title": "Breathing space — important handling rule",
+    "summary": "If a resident mentions Breathing Space, the Debt Respite Scheme, or a moratorium, the agent must stop standard collection activity immediately and escalate.",
+    "source_domain": "public_policy",
+    "body_markdown": "The Breathing Space (Debt Respite Scheme) is a government scheme that provides legal protection from creditor contact and enforcement for eligible individuals.\n\nIf a resident mentions:\n- breathing space\n- a debt moratorium\n- that they are applying through a debt adviser\n\nThe agent must:\n- stop all collection-related communication\n- not make any demands or arrangements\n- escalate immediately to the appropriate team\n\nThis is a critical rule and applies regardless of the current call path.",
+    "do_say_text": "Thank you for mentioning that. I need to pause the call here and make sure this is referred to the right team who can help you correctly.",
+    "do_not_say_text": "Do not continue any collection conversation. Do not make any demands or arrangements.",
+    "warning_text": "CRITICAL: If breathing space is mentioned, stop all collection activity immediately and escalate.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"],
+    "tags": ["breathing_space", "debt_respite", "critical", "public_policy"]
+  }
+]

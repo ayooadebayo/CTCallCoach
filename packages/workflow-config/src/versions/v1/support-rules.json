@@ -1,0 +1,58 @@
+[
+  {
+    "rule_code": "SR_001",
+    "support_option_code": "SO_PAYMENT_DIFFICULTY_GENERAL",
+    "trigger_conditions": {
+      "primary_path": ["PD1", "PD2", "PD3", "PD4", "PD5"]
+    },
+    "description": "Surface general payment difficulty support route for all payment-difficulty paths"
+  },
+  {
+    "rule_code": "SR_002",
+    "support_option_code": "SO_CTR_SIGNPOST",
+    "trigger_conditions": {
+      "overlay_paths": ["PD6"],
+      "OR": [
+        { "benefits_or_low_income": true },
+        { "income_changed": true }
+      ]
+    },
+    "description": "Surface Council Tax Reduction signposting when low income or benefit flag is present"
+  },
+  {
+    "rule_code": "SR_003",
+    "support_option_code": "SO_DEBT_ADVICE",
+    "trigger_conditions": {
+      "OR": [
+        { "overlay_paths": ["PD6"] },
+        { "primary_path": "PD4" },
+        { "stage_estimate": "formal_recovery" }
+      ]
+    },
+    "description": "Surface debt advice signposting for higher-risk stages or support overlay cases"
+  },
+  {
+    "rule_code": "SR_004",
+    "support_option_code": "SO_SPECIALIST_REVIEW",
+    "trigger_conditions": {
+      "OR": [
+        { "primary_path": ["PD3", "PD4"] },
+        { "overlay_paths": ["PD7"] }
+      ]
+    },
+    "description": "Surface specialist review route for final-notice, liability-order, or vulnerability-overlay cases"
+  },
+  {
+    "rule_code": "SR_005",
+    "support_option_code": "SO_COMMUNICATION_SUPPORT",
+    "trigger_conditions": {
+      "overlay_paths": ["PD7"],
+      "vulnerability_categories": [
+        "language_or_communication_difficulty",
+        "learning_or_cognitive_need",
+        "disability_or_access_need"
+      ]
+    },
+    "description": "Surface communication support route when relevant vulnerability signal is present"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "name": "@ctcc/workflow-config",
+  "version": "0.0.1",
+  "description": "Versioned workflow rule definitions — enquiry taxonomy, question steps, classification, path, support, escalation, and outcome rules",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc -p tsconfig.json --watch"
+  },
+  "dependencies": {
+    "@ctcc/shared-schemas": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

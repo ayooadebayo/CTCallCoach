@@ -1,0 +1,24 @@
+---
+description: Product scope guardrails — what is in and out of MVP scope
+globs: ["**/*.ts", "**/*.tsx", "**/*.json"]
+alwaysApply: true
+---
+
+# Product scope guardrails
+
+## In scope for MVP
+- Payment difficulty / arrears call scenario only (PD1–PD8)
+- Guided workflow from intake to wrap-up
+- Support and escalation surfacing
+- Case note and coaching generation
+- Synthetic Acme City Council demo data
+
+## Out of scope — do not build
+- Live telephony or audio processing
+- Real council tax system of record integration
+- Full Council Tax Reduction decisioning
+- Automated payment arrangement calculation engine
+- Full debt recovery processing
+- Resident self-service portal
+- Enterprise SSO or identity provider
+- Multi-authority configuration

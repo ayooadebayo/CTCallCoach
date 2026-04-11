@@ -1,0 +1,66 @@
+[
+  {
+    "code": "PD1",
+    "label": "Current-year payment difficulty",
+    "description": "Resident is struggling to keep up with current-year instalments. No formal recovery stage is yet clear.",
+    "category": "payment_difficulty",
+    "is_overlay": false,
+    "sort_order": 1
+  },
+  {
+    "code": "PD2",
+    "label": "Missed instalment / reminder-stage difficulty",
+    "description": "Resident has missed one or more instalments or mentions a reminder notice.",
+    "category": "payment_difficulty",
+    "is_overlay": false,
+    "sort_order": 2
+  },
+  {
+    "code": "PD3",
+    "label": "Final notice concern",
+    "description": "Resident says they have lost the right to instalments or have been told the whole year's balance is due.",
+    "category": "payment_difficulty",
+    "is_overlay": false,
+    "sort_order": 3
+  },
+  {
+    "code": "PD4",
+    "label": "Summons / liability-order-stage concern",
+    "description": "Resident mentions summons, court, liability order, or similar higher-risk recovery stage.",
+    "category": "payment_difficulty",
+    "is_overlay": false,
+    "sort_order": 4
+  },
+  {
+    "code": "PD5",
+    "label": "Existing arrears with request for help",
+    "description": "Resident acknowledges arrears and wants help, an arrangement, or a clearer next step.",
+    "category": "payment_difficulty",
+    "is_overlay": false,
+    "sort_order": 5
+  },
+  {
+    "code": "PD6",
+    "label": "Payment difficulty with likely support route",
+    "description": "Resident's answers suggest support-related signposting may be relevant (Council Tax Reduction, discounts, debt advice).",
+    "category": "support_overlay",
+    "is_overlay": true,
+    "sort_order": 6
+  },
+  {
+    "code": "PD7",
+    "label": "Payment difficulty with vulnerability-sensitive handling need",
+    "description": "Resident's answers suggest the call should be handled with extra care and potentially routed differently.",
+    "category": "vulnerability_overlay",
+    "is_overlay": true,
+    "sort_order": 7
+  },
+  {
+    "code": "PD8",
+    "label": "Wrong queue / outside scope",
+    "description": "The issue is not primarily a council tax payment-difficulty call and should be redirected or ended safely.",
+    "category": "out_of_scope",
+    "is_overlay": false,
+    "sort_order": 8
+  }
+]

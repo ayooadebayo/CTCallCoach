@@ -1,0 +1,162 @@
+[
+  {
+    "code": "Q_INTAKE_REASON",
+    "stage": "intake",
+    "question_text": "What is the main reason for your call today?",
+    "question_type": "single_select",
+    "mandatory": true,
+    "why_it_matters_text": "Establishing the initial reason orients the agent to the likely handling path before deeper questioning begins.",
+    "answer_options": [
+      "struggling_to_pay",
+      "missed_a_payment",
+      "received_reminder",
+      "received_final_notice",
+      "received_summons_court_letter",
+      "wants_arrangement_or_help",
+      "asks_about_reduction_or_help_available",
+      "unclear_or_other"
+    ],
+    "sort_order": 1
+  },
+  {
+    "code": "Q_CLASS_STRUGGLING_OR_NOTICE",
+    "stage": "classification",
+    "question_text": "Are you calling because you're struggling to pay, because you've missed a payment, or because you've received a notice?",
+    "question_type": "single_select",
+    "mandatory": true,
+    "why_it_matters_text": "This distinguishes early-stage difficulty from more serious recovery-stage situations that require different handling.",
+    "answer_options": [
+      "struggling_to_pay",
+      "missed_payment",
+      "received_notice"
+    ],
+    "sort_order": 2
+  },
+  {
+    "code": "Q_CLASS_CURRENT_BILL",
+    "stage": "classification",
+    "question_text": "Is this about your current council tax bill?",
+    "question_type": "boolean",
+    "mandatory": true,
+    "why_it_matters_text": "Confirms whether this is about the current billing year or a historical period, which affects the handling path.",
+    "sort_order": 3
+  },
+  {
+    "code": "Q_CLASS_NOTICE_TYPE",
+    "stage": "classification",
+    "question_text": "Have you received a reminder, final notice, summons, or liability order?",
+    "question_type": "single_select",
+    "mandatory": true,
+    "why_it_matters_text": "The formal recovery stage determines which path the workflow follows and what the agent can safely offer.",
+    "answer_options": [
+      "no_notice",
+      "reminder",
+      "final_notice",
+      "summons_or_court",
+      "liability_order",
+      "unsure"
+    ],
+    "sort_order": 4
+  },
+  {
+    "code": "Q_CLASS_RESIDENT_GOAL",
+    "stage": "classification",
+    "question_text": "Are you looking for help with payments, to understand what the notice means, or both?",
+    "question_type": "single_select",
+    "mandatory": true,
+    "why_it_matters_text": "Understanding the resident's immediate goal shapes what the agent focuses on first.",
+    "answer_options": [
+      "help_with_payments",
+      "understand_notice",
+      "both",
+      "other"
+    ],
+    "sort_order": 5
+  },
+  {
+    "code": "Q_FACTS_STAGE_ESTIMATE",
+    "stage": "fact_gathering",
+    "question_text": "What stage do you think you are at: worried about paying, already behind, or already in formal recovery?",
+    "question_type": "single_select",
+    "mandatory": true,
+    "why_it_matters_text": "A self-assessed stage estimate helps the agent validate the earlier classification against the resident's own understanding.",
+    "answer_options": [
+      "worried_about_paying",
+      "already_behind",
+      "formal_recovery",
+      "unsure"
+    ],
+    "sort_order": 6
+  },
+  {
+    "code": "Q_FACTS_INCOME_CHANGE",
+    "stage": "fact_gathering",
+    "question_text": "Has your income changed recently, or has something happened that has made payments harder?",
+    "question_type": "boolean",
+    "mandatory": true,
+    "why_it_matters_text": "A change in circumstances may indicate eligibility for support routes and is important context for any arrangement.",
+    "sort_order": 7
+  },
+  {
+    "code": "Q_FACTS_BENEFITS_LOW_INCOME",
+    "stage": "fact_gathering",
+    "question_text": "Are you receiving benefits, on a low income, or likely to need support with the bill?",
+    "question_type": "boolean",
+    "mandatory": true,
+    "why_it_matters_text": "This triggers the support-route overlay check for Council Tax Reduction, discounts, and debt advice signposting.",
+    "sort_order": 8
+  },
+  {
+    "code": "Q_FACTS_VULNERABILITY",
+    "stage": "fact_gathering",
+    "question_text": "Is there anything affecting your ability to manage this right now, such as illness, disability, bereavement, caring responsibilities, or mental health difficulty?",
+    "question_type": "boolean",
+    "mandatory": true,
+    "sensitivity_warning": "Handle this question sensitively. The resident does not have to share details. Acknowledge whatever they share with care.",
+    "why_it_matters_text": "Detecting vulnerability signals early allows the workflow to adjust handling pace, wording, and specialist routing.",
+    "sort_order": 9
+  },
+  {
+    "code": "Q_FACTS_RESIDENT_INTENT",
+    "stage": "fact_gathering",
+    "question_text": "Are you calling mainly to ask for time to pay, to understand what the notice means, or to check what help might be available?",
+    "question_type": "single_select",
+    "mandatory": true,
+    "why_it_matters_text": "Clarifying the resident's intent ensures the agent focuses on the right primary action for the rest of the call.",
+    "answer_options": [
+      "time_to_pay",
+      "understand_notice",
+      "check_available_help",
+      "combination",
+      "other"
+    ],
+    "sort_order": 10
+  },
+  {
+    "code": "Q_OPT_INSTALMENTS_MISSED",
+    "stage": "fact_gathering",
+    "question_text": "Do you know roughly how many instalments you have missed?",
+    "question_type": "numeric",
+    "mandatory": false,
+    "why_it_matters_text": "Knowing the number of missed instalments helps assess the likely debt level and path urgency.",
+    "sort_order": 11
+  },
+  {
+    "code": "Q_OPT_PRIOR_CONTACT",
+    "stage": "fact_gathering",
+    "question_text": "Have you spoken to the council about this before?",
+    "question_type": "boolean",
+    "mandatory": false,
+    "why_it_matters_text": "Prior contact may indicate a history of engagement that affects how the agent frames next steps.",
+    "sort_order": 12
+  },
+  {
+    "code": "Q_OPT_DEBT_ADVISER",
+    "stage": "fact_gathering",
+    "question_text": "Are you already working with a debt adviser, support worker, or carer?",
+    "question_type": "boolean",
+    "mandatory": false,
+    "why_it_matters_text": "Existing support relationships affect what the agent can signpost and whether specialist routing is already underway.",
+    "sort_order": 13
+  }
+]

@@ -1,0 +1,37 @@
+---
+description: Workflow engine rules — the engine is primary, AI is bounded
+globs: ["**/workflow/**/*.ts", "**/ai/**/*.ts"]
+alwaysApply: true
+---
+
+# Workflow engine rules
+
+## Primary rule
+The workflow engine is the single source of truth for path decisions.
+The UI renders engine outputs. The AI layer assists — it does not decide.
+
+## Engine responsibilities
+- classify enquiry type
+- determine next required question
+- evaluate decision points
+- surface support options
+- trigger escalation flags
+- enforce stop conditions
+- emit trace objects
+
+## What the engine must NOT do
+- call the AI layer to make path decisions
+- guess at facts not yet captured
+
+## What the AI layer must NOT do
+- decide legal entitlement
+- invent local authority rules
+- override escalation logic
+- fabricate facts not in session state
+- return freeform text that bypasses schema validation
+
+## Rule traceability
+Every significant decision must include:
+- rule_code that fired
+- trigger_facts that caused it
+- workflow_version_id active at evaluation time

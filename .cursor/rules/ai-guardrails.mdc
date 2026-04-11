@@ -1,0 +1,36 @@
+---
+description: AI guardrails — constraints for all AI task implementations
+globs: ["**/ai/**/*.ts"]
+alwaysApply: true
+---
+
+# AI guardrails
+
+## The six permitted AI jobs
+1. question_rationale — explain why a question matters
+2. policy_simplifier — simplify a guidance concept
+3. suggested_wording — draft empathetic resident-facing wording
+4. wrap_up_summary — generate structured case note draft
+5. coaching_feedback — generate after-call coaching
+6. missed_support_opportunity — detect likely missed signposting
+
+## Rules for every AI job
+- Each job has its own prompt template file in src/ai/tasks/
+- All outputs are schema-validated before use
+- All outputs include a confidence field
+- Source content is bounded to session_facts, workflow_trace, public_policy snippets, acme_operations snippets
+- The model does not use background knowledge for policy or local rules
+- Every AI output records prompt_version_id and model_name
+
+## Forbidden AI behaviors
+- claiming legal entitlement
+- inventing council policy rules
+- overriding escalation logic
+- fabricating missing facts
+- presenting guesses as confirmed policy
+
+## Fallback requirement
+Every AI job must have a deterministic fallback that activates when:
+- the AI service is unavailable
+- the output fails schema validation
+- the output confidence is below the threshold

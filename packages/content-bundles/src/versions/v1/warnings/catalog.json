@@ -1,0 +1,38 @@
+[
+  {
+    "code": "WARN_DO_NOT_PROMISE_ARRANGEMENT",
+    "severity": "caution",
+    "message": "Do not promise or confirm a payment arrangement at this stage. Arrangements require specialist authorisation.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"]
+  },
+  {
+    "code": "WARN_DO_NOT_CONFIRM_CTR",
+    "severity": "caution",
+    "message": "Do not confirm that the resident is eligible for Council Tax Reduction. Signpost only — eligibility requires an assessment.",
+    "applicable_contexts": ["PD6"]
+  },
+  {
+    "code": "WARN_HIGHER_RISK_STAGE",
+    "severity": "high_risk",
+    "message": "This is a higher-risk recovery stage. Do not make commitments beyond first-line scope. Consider escalation to the Revenues Specialist team.",
+    "applicable_contexts": ["PD4"]
+  },
+  {
+    "code": "WARN_VULNERABILITY_SENSITIVE",
+    "severity": "caution",
+    "message": "Vulnerability-sensitive handling required. Slow the call pace, use supportive language, and consider specialist routing.",
+    "applicable_contexts": ["PD7"]
+  },
+  {
+    "code": "WARN_BREATHING_SPACE_CRITICAL",
+    "severity": "high_risk",
+    "message": "CRITICAL: Breathing Space has been mentioned. Stop all collection activity immediately and escalate to the specialist team.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"]
+  },
+  {
+    "code": "WARN_FIRST_LINE_SCOPE",
+    "severity": "informational",
+    "message": "Reminder: first-line agents cannot confirm arrangements, grant extensions, or make entitlement decisions without specialist involvement.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"]
+  }
+]

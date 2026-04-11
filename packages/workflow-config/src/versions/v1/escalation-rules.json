@@ -1,0 +1,46 @@
+[
+  {
+    "rule_code": "ER_001",
+    "escalation_code": "ESC_HIGHER_RISK_RECOVERY",
+    "category": "higher_risk_recovery_stage",
+    "severity": "high",
+    "trigger_conditions": {
+      "notice_type": ["summons_or_court", "liability_order"]
+    },
+    "description": "Escalate when resident is at summons or liability order stage — specialist review required"
+  },
+  {
+    "rule_code": "ER_002",
+    "escalation_code": "ESC_VULNERABILITY_SENSITIVE",
+    "category": "vulnerability_sensitive",
+    "severity": "medium",
+    "trigger_conditions": {
+      "overlay_paths": ["PD7"],
+      "vulnerability_detected": true
+    },
+    "description": "Escalate for specialist review when vulnerability-sensitive handling is needed and first-line scope is insufficient"
+  },
+  {
+    "rule_code": "ER_003",
+    "escalation_code": "ESC_SPECIALIST_REVIEW",
+    "category": "specialist_review_required",
+    "severity": "medium",
+    "trigger_conditions": {
+      "OR": [
+        { "primary_path": "PD4" },
+        { "agent_override_specialist_review": true }
+      ]
+    },
+    "description": "Route to specialist team when first-line agent cannot safely proceed"
+  },
+  {
+    "rule_code": "ER_004",
+    "escalation_code": "ESC_BREATHING_SPACE",
+    "category": "breathing_space_related",
+    "severity": "critical",
+    "trigger_conditions": {
+      "breathing_space_mentioned": true
+    },
+    "description": "Critical escalation when breathing space is mentioned — do not continue standard collection path"
+  }
+]

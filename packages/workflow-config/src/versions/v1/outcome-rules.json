@@ -1,0 +1,76 @@
+[
+  {
+    "path_code": "PD1",
+    "allowed_outcomes": [
+      "info_only",
+      "support_signposted",
+      "callback_required",
+      "pending_further_evidence"
+    ]
+  },
+  {
+    "path_code": "PD2",
+    "allowed_outcomes": [
+      "info_only",
+      "support_signposted",
+      "callback_required",
+      "pending_further_evidence"
+    ]
+  },
+  {
+    "path_code": "PD3",
+    "allowed_outcomes": [
+      "info_only",
+      "support_signposted",
+      "specialist_review_referred",
+      "callback_required",
+      "pending_further_evidence"
+    ]
+  },
+  {
+    "path_code": "PD4",
+    "allowed_outcomes": [
+      "specialist_review_referred",
+      "debt_advice_signposted",
+      "callback_required",
+      "vulnerability_flag_raised",
+      "pending_further_evidence"
+    ]
+  },
+  {
+    "path_code": "PD5",
+    "allowed_outcomes": [
+      "info_only",
+      "support_signposted",
+      "specialist_review_referred",
+      "debt_advice_signposted",
+      "callback_required",
+      "pending_further_evidence"
+    ]
+  },
+  {
+    "path_code": "PD6",
+    "allowed_outcomes": [
+      "support_signposted",
+      "debt_advice_signposted",
+      "specialist_review_referred",
+      "callback_required"
+    ]
+  },
+  {
+    "path_code": "PD7",
+    "allowed_outcomes": [
+      "vulnerability_flag_raised",
+      "specialist_review_referred",
+      "support_signposted",
+      "callback_required"
+    ]
+  },
+  {
+    "path_code": "PD8",
+    "allowed_outcomes": [
+      "redirected",
+      "info_only"
+    ]
+  }
+]

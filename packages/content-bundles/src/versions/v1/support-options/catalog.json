@@ -1,0 +1,66 @@
+[
+  {
+    "code": "SO_PAYMENT_DIFFICULTY_GENERAL",
+    "label": "Payment difficulty support",
+    "category": "payment_difficulty",
+    "resident_explanation": "If you are struggling to pay your council tax, please get in touch as early as possible. There may be options available to help you manage your payments.",
+    "internal_handling_note": "General first-line response for payment difficulty. Explain available options without making commitments. Route to specialist if more detailed arrangement is needed.",
+    "requires_specialist_follow_up": false,
+    "source_domain": "acme_operations",
+    "trigger_conditions": { "primary_path": ["PD1", "PD2", "PD3", "PD5"] }
+  },
+  {
+    "code": "SO_CTR_SIGNPOST",
+    "label": "Council Tax Reduction signposting",
+    "category": "council_tax_reduction_signpost",
+    "resident_explanation": "You may be eligible for Council Tax Reduction, which is a scheme that can reduce your council tax bill if you are on a low income or receiving certain benefits. You would need to apply and be assessed.",
+    "internal_handling_note": "Signpost only. Do not make eligibility decisions. Direct resident to the CTR application process. See guidance card GC_ACME_CTR_SIGNPOST_ROUTE for Acme process.",
+    "requires_specialist_follow_up": false,
+    "source_domain": "acme_operations",
+    "trigger_conditions": { "OR": [{ "benefits_or_low_income": true }, { "income_changed": true }] }
+  },
+  {
+    "code": "SO_DEBT_ADVICE",
+    "label": "Free debt advice signposting",
+    "category": "debt_advice",
+    "resident_explanation": "If you have multiple debts or are finding it very difficult to manage, there are free, independent debt advice services that can help you look at all your options. This is confidential and does not affect your council tax account.",
+    "internal_handling_note": "Signpost to free debt advice services (e.g., Citizens Advice, StepChange, National Debtline). This is appropriate for residents with multiple debts, at formal recovery stage, or who are struggling significantly.",
+    "requires_specialist_follow_up": false,
+    "source_domain": "public_policy",
+    "trigger_conditions": {
+      "OR": [
+        { "primary_path": "PD4" },
+        { "stage_estimate": "formal_recovery" },
+        { "overlay_paths": ["PD6"] }
+      ]
+    }
+  },
+  {
+    "code": "SO_SPECIALIST_REVIEW",
+    "label": "Revenues specialist review",
+    "category": "specialist_review",
+    "resident_explanation": "This situation needs to be looked at by our specialist team who are best placed to help with this. They will be in contact to discuss your options.",
+    "internal_handling_note": "Route to Revenues Specialist team. Capture full case note before routing. Set callback marker. SLA: 2 working days for standard referrals.",
+    "requires_specialist_follow_up": true,
+    "source_domain": "acme_operations",
+    "trigger_conditions": {
+      "OR": [{ "primary_path": ["PD3", "PD4"] }, { "overlay_paths": ["PD7"] }]
+    }
+  },
+  {
+    "code": "SO_COMMUNICATION_SUPPORT",
+    "label": "Communication or access support",
+    "category": "communication_support",
+    "resident_explanation": "If you need support communicating with us, for example a different format, an interpreter, or help managing correspondence, please let us know and we can arrange this.",
+    "internal_handling_note": "Log communication support need in case note. Check Acme reasonable adjustments process. Do not dismiss or minimise access needs.",
+    "requires_specialist_follow_up": false,
+    "source_domain": "acme_operations",
+    "trigger_conditions": {
+      "vulnerability_categories": [
+        "language_or_communication_difficulty",
+        "learning_or_cognitive_need",
+        "disability_or_access_need"
+      ]
+    }
+  }
+]

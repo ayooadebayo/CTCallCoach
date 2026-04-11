@@ -1,0 +1,30 @@
+---
+description: Schema validation rules — all payloads must be validated
+globs: ["**/*.ts", "**/*.json"]
+alwaysApply: true
+---
+
+# Schema validation rules
+
+## Where schemas live
+All Zod schemas live in `packages/shared-schemas`.
+Do NOT create inline ad hoc schemas in route handlers or components.
+
+## What must be validated
+- All API request payloads (inbound)
+- All API response bodies (outbound)
+- All workflow config files on load
+- All content bundle files on load
+- All AI task outputs before use
+- All analytics events before persistence
+
+## Validation pattern
+```typescript
+import { SomeSchema } from '@ctcc/shared-schemas';
+const result = SomeSchema.safeParse(input);
+if (!result.success) { /* handle error */ }
+```
+
+## AI output validation
+AI outputs must be validated with the matching output schema before being passed to the UI or persistence layer.
+Failed AI output validation must trigger the fallback, not surface raw model text.

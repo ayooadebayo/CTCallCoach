@@ -1,0 +1,28 @@
+---
+description: Content separation rules — public policy and Acme operations must always be distinct
+globs: ["**/content-bundles/**", "**/guidance/**", "**/content/**"]
+alwaysApply: true
+---
+
+# Content separation rules
+
+## The critical rule
+Public policy content and Acme operational content must ALWAYS be stored, retrieved, and displayed separately.
+
+## Source domains
+- `public_policy` — guidance grounded in publicly available UK council tax guidance principles
+- `acme_operations` — fictional Acme City Council internal handling instructions
+
+## In the content bundle
+- public_policy guidance cards live in `src/versions/v1/public-policy/`
+- acme_operations guidance cards live in `src/versions/v1/acme-operations/`
+- NEVER combine them into a single file
+
+## In the API
+- Guidance cards carry a `source_domain` field
+- Always include source_domain in API responses for guidance content
+
+## In the UI
+- The guidance panel must visually distinguish public_policy from acme_operations cards
+- Use a visible label or badge for each source domain
+- The system must never present Acme operational rules as if they were public policy

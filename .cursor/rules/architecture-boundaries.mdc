@@ -1,0 +1,31 @@
+---
+description: Architecture boundaries — where things live and what they own
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# Architecture boundaries
+
+## Shared types
+- All domain TypeScript types live in `packages/shared-types`
+- Do NOT define domain types inline in apps/web or apps/api
+
+## Shared schemas
+- All Zod validation schemas live in `packages/shared-schemas`
+- Do NOT create ad hoc inline schemas in routes or components
+
+## Workflow config
+- All rule definitions live in `packages/workflow-config/src/versions/`
+- Do NOT hardcode workflow rules inside API modules or UI components
+
+## Content
+- All guidance content lives in `packages/content-bundles/src/versions/`
+- Public policy and Acme operations are ALWAYS separate directories
+
+## Backend
+- apps/api is a modular monolith — use modules/, workflow/, ai/, analytics/, qa/, coaching/
+- Do NOT spread workflow logic across route handlers
+
+## Frontend
+- apps/web features live in src/features/{feature-name}/
+- Do NOT re-implement workflow logic in the UI — render engine outputs only

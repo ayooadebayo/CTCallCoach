@@ -1,0 +1,58 @@
+[
+  {
+    "code": "WT_ACKNOWLEDGE_DISTRESS",
+    "context_code": "vulnerability_detected",
+    "tone_type": "empathetic",
+    "text": "I can hear that this is a difficult situation. Thank you for getting in touch. I want to make sure we handle this in the right way for you.",
+    "applicable_contexts": ["PD7"],
+    "prohibited_use_notes": "Do not use if the resident has not expressed distress."
+  },
+  {
+    "code": "WT_EARLY_CONTACT_POSITIVE",
+    "context_code": "intake_early_stage",
+    "tone_type": "supportive",
+    "text": "You've done the right thing by getting in touch now. Contacting us early means there are more options available to help you.",
+    "applicable_contexts": ["PD1", "PD2"],
+    "prohibited_use_notes": null
+  },
+  {
+    "code": "WT_EXPLAIN_UNCERTAINTY",
+    "context_code": "outcome_uncertain",
+    "tone_type": "neutral",
+    "text": "I can guide you to the right next step, but I am not able to confirm the final outcome from this call. I want to make sure you get the right help.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"],
+    "prohibited_use_notes": "Use whenever the agent cannot confirm a specific outcome."
+  },
+  {
+    "code": "WT_NEXT_STEP_SPECIALIST",
+    "context_code": "escalation_specialist_review",
+    "tone_type": "neutral",
+    "text": "Based on what you've told me, I'm going to arrange for this to be reviewed by the right team. They will be in contact with you to discuss your options in more detail.",
+    "applicable_contexts": ["PD3", "PD4", "PD7"],
+    "prohibited_use_notes": "Do not commit to a specific timeframe unless you have confirmed the SLA."
+  },
+  {
+    "code": "WT_SIGNPOST_SUPPORT",
+    "context_code": "support_signposting",
+    "tone_type": "supportive",
+    "text": "Based on what you've shared, it might be worth checking whether any additional support is available to you. I can point you towards some options that might help.",
+    "applicable_contexts": ["PD6"],
+    "prohibited_use_notes": "Do not confirm eligibility. Signposting only."
+  },
+  {
+    "code": "WT_SAFER_PATH_SELECTED",
+    "context_code": "uncertainty_path_change",
+    "tone_type": "neutral",
+    "text": "I want to understand your situation fully before advising on the next steps. I am going to take the safer route and make sure we get this right.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"],
+    "prohibited_use_notes": null
+  },
+  {
+    "code": "WT_BREATHING_SPACE_PAUSE",
+    "context_code": "breathing_space_triggered",
+    "tone_type": "neutral",
+    "text": "Thank you for mentioning that. I need to pause our conversation here and make sure this is referred to the right team who can help you correctly with that.",
+    "applicable_contexts": ["PD1", "PD2", "PD3", "PD4", "PD5"],
+    "prohibited_use_notes": "CRITICAL: Use immediately if breathing space is mentioned. Stop all collection conversation."
+  }
+]

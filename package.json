@@ -1,0 +1,28 @@
+{
+  "name": "ct-call-coach",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Council Tax Call Coach — AI-assisted workflow coach for council tax contact-centre handling",
+  "scripts": {
+    "dev:web": "pnpm --filter @ctcc/web dev",
+    "dev:api": "pnpm --filter @ctcc/api dev",
+    "build": "pnpm --filter './packages/*' run build && pnpm --filter './apps/*' run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.1.0"
+}

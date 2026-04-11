@@ -1,0 +1,84 @@
+[
+  {
+    "rule_code": "CR_001",
+    "description": "Classify as PD1 when resident is struggling to pay and no formal notice is mentioned",
+    "conditions": {
+      "notice_type": "no_notice",
+      "intent": "struggling_to_pay"
+    },
+    "output_path": "PD1",
+    "is_overlay": false,
+    "confidence": "medium"
+  },
+  {
+    "rule_code": "CR_002",
+    "description": "Classify as PD2 when resident mentions a reminder notice",
+    "conditions": {
+      "notice_type": "reminder"
+    },
+    "output_path": "PD2",
+    "is_overlay": false,
+    "confidence": "high"
+  },
+  {
+    "rule_code": "CR_003",
+    "description": "Classify as PD3 when resident mentions a final notice or lost right to instalments",
+    "conditions": {
+      "notice_type": "final_notice"
+    },
+    "output_path": "PD3",
+    "is_overlay": false,
+    "confidence": "high"
+  },
+  {
+    "rule_code": "CR_004",
+    "description": "Classify as PD4 when resident mentions summons, court, or liability order",
+    "conditions": {
+      "notice_type": ["summons_or_court", "liability_order"]
+    },
+    "output_path": "PD4",
+    "is_overlay": false,
+    "confidence": "high"
+  },
+  {
+    "rule_code": "CR_005",
+    "description": "Classify as PD5 when resident acknowledges arrears and wants help or arrangement",
+    "conditions": {
+      "intent": ["time_to_pay", "check_available_help"],
+      "stage_estimate": ["already_behind", "formal_recovery"]
+    },
+    "output_path": "PD5",
+    "is_overlay": false,
+    "confidence": "medium"
+  },
+  {
+    "rule_code": "CR_006_OVERLAY",
+    "description": "Add PD6 overlay when benefits or low income flag is present",
+    "conditions": {
+      "benefits_or_low_income": true
+    },
+    "output_path": "PD6",
+    "is_overlay": true,
+    "confidence": "high"
+  },
+  {
+    "rule_code": "CR_007_OVERLAY",
+    "description": "Add PD7 overlay when any vulnerability signal is detected",
+    "conditions": {
+      "vulnerability_detected": true
+    },
+    "output_path": "PD7",
+    "is_overlay": true,
+    "confidence": "high"
+  },
+  {
+    "rule_code": "CR_008",
+    "description": "Classify as PD8 when enquiry is clearly outside scope",
+    "conditions": {
+      "out_of_scope": true
+    },
+    "output_path": "PD8",
+    "is_overlay": false,
+    "confidence": "high"
+  }
+]
