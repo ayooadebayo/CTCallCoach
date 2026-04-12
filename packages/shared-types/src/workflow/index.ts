@@ -15,7 +15,7 @@ export interface WorkflowEngineInput {
   residentContext: Record<string, unknown>;
   scenarioContext: Record<string, unknown>;
   capturedFacts: CapturedFact[];
-  intentSignals: IntentSignal[];
+  intentSignals: WorkflowIntentSignal[];
   vulnerabilitySignals: string[];
   currentClassification: EnquiryTypeCode | null;
   currentStage: SessionStage;
@@ -83,7 +83,7 @@ export interface CapturedFact {
   confidence: 'low' | 'medium' | 'high';
 }
 
-export interface IntentSignal {
+export interface WorkflowIntentSignal {
   signal_type: string;
   signal_value: string;
   source: string;
