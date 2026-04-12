@@ -2,17 +2,9 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import 'dotenv/config';
 
-// Routes — registered as they are implemented
-// import sessionsRoute from '../routes/sessions.js';
-// import workflowRoute from '../routes/workflow.js';
-// import guidanceRoute from '../routes/guidance.js';
-// import supportRoute from '../routes/support.js';
-// import escalationsRoute from '../routes/escalations.js';
-// import wrapupRoute from '../routes/wrapup.js';
-// import qaRoute from '../routes/qa.js';
-// import analyticsRoute from '../routes/analytics.js';
-// import adminRoute from '../routes/admin.js';
-// import scenariosRoute from '../routes/scenarios.js';
+import { sessionsRoute } from '../routes/sessions.js';
+import { workflowRoute } from '../routes/workflow.js';
+import { scenariosRoute } from '../routes/scenarios.js';
 
 const server = Fastify({ logger: true });
 
@@ -20,7 +12,13 @@ await server.register(cors, {
   origin: process.env['NODE_ENV'] === 'production' ? false : 'http://localhost:5173',
 });
 
+// Health check
 server.get('/health', async () => ({ status: 'ok', ts: new Date().toISOString() }));
+
+// Core routes — Step 4: sessions, workflow engine, scenario library
+await server.register(sessionsRoute);
+await server.register(workflowRoute);
+await server.register(scenariosRoute);
 
 const port = parseInt(process.env['PORT'] ?? '3001', 10);
 
