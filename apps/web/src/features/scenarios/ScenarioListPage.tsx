@@ -123,7 +123,7 @@ export function ScenarioListPage() {
                   <span className="text-xs font-medium text-blue-700">
                     {s.expected_primary_path} — {PATH_LABELS[s.expected_primary_path] ?? s.expected_primary_path}
                   </span>
-                  {s.tags.map((t) => (
+                  {(s.tags ?? []).map((t) => (
                     <span
                       key={t}
                       className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5"

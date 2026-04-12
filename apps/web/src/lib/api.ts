@@ -31,11 +31,13 @@ export interface ScenarioSummary {
   scenario_type: string;
   expected_primary_path: string;
   difficulty_level: number | null;
-  tags: string[];
+  tags: string[] | null;
 }
 
 export function listScenarios(): Promise<ScenarioSummary[]> {
-  return request('GET', '/scenarios');
+  return request<{ scenarios: ScenarioSummary[] }>('GET', '/scenarios').then(
+    (r) => r.scenarios,
+  );
 }
 
 // ─── Agents ───────────────────────────────────────────────────────────────────
