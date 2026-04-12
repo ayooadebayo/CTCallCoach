@@ -135,6 +135,26 @@ export function getWorkflowNext(sessionId: string): Promise<WorkflowNextResponse
   return request('GET', `/workflow/${sessionId}/next`);
 }
 
+// ─── Support options ─────────────────────────────────────────────────────────
+
+export interface ResolvedSupportOption {
+  code: string;
+  label: string;
+  category: string;
+  resident_explanation: string;
+  internal_handling_note: string;
+  requires_specialist_follow_up: boolean;
+  source_domain?: 'public_policy' | 'acme_operations';
+}
+
+export interface SupportOptionsResponse {
+  support_options: ResolvedSupportOption[];
+}
+
+export function getSupportOptions(sessionId: string): Promise<SupportOptionsResponse> {
+  return request('GET', `/support/${sessionId}/options`);
+}
+
 // ─── Guidance ─────────────────────────────────────────────────────────────────
 
 export interface GuidanceCard {

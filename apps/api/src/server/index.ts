@@ -8,6 +8,7 @@ import { scenariosRoute } from '../routes/scenarios.js';
 import { agentsRoute } from '../routes/agents.js';
 import { guidanceRoute } from '../routes/guidance.js';
 import { wrapupRoute } from '../routes/wrapup.js';
+import { supportRoute } from '../routes/support.js';
 
 const server = Fastify({ logger: true });
 
@@ -25,6 +26,7 @@ await server.register(scenariosRoute);
 await server.register(agentsRoute);
 await server.register(guidanceRoute);
 await server.register(wrapupRoute);
+await server.register(supportRoute);
 
 const port = parseInt(process.env['PORT'] ?? '3001', 10);
 

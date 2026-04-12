@@ -116,3 +116,43 @@ export const SEVERITY_COLORS: Record<string, string> = {
   high: 'bg-orange-50 border-orange-400 text-orange-900',
   critical: 'bg-red-50 border-red-600 text-red-900',
 };
+
+// ─── Support option labels and domain colours ─────────────────────────────────
+
+export const SUPPORT_OPTION_CODE_LABELS: Record<string, string> = {
+  SO_PAYMENT_DIFFICULTY_GENERAL: 'Payment difficulty support',
+  SO_CTR_SIGNPOST: 'Council Tax Reduction signposting',
+  SO_DEBT_ADVICE: 'Free debt advice signposting',
+  SO_SPECIALIST_REVIEW: 'Revenues specialist review',
+  SO_COMMUNICATION_SUPPORT: 'Communication or access support',
+};
+
+export const SUPPORT_CATEGORY_LABELS: Record<string, string> = {
+  payment_difficulty: 'Payment Difficulty',
+  council_tax_reduction_signpost: 'Council Tax Reduction',
+  discount_exemption_signpost: 'Discount / Exemption',
+  debt_advice: 'Debt Advice',
+  specialist_review: 'Specialist Review',
+  communication_support: 'Communication Support',
+};
+
+export const SOURCE_DOMAIN_LABEL: Record<string, string> = {
+  public_policy: 'Policy',
+  acme_operations: 'Operations',
+};
+
+export const SOURCE_DOMAIN_COLORS: Record<string, string> = {
+  public_policy: 'bg-sky-50 border-sky-300 text-sky-800',
+  acme_operations: 'bg-amber-50 border-amber-300 text-amber-800',
+};
+
+// ─── Escalation category labels ───────────────────────────────────────────────
+
+export const ESCALATION_CATEGORY_LABELS: Record<string, string> = {
+  higher_risk_recovery_stage: 'Higher risk recovery',
+  liability_dispute: 'Liability dispute',
+  representation_unclear: 'Representation unclear',
+  vulnerability_sensitive: 'Vulnerability sensitive',
+  breathing_space_related: 'Breathing space',
+  specialist_review_required: 'Specialist review required',
+};

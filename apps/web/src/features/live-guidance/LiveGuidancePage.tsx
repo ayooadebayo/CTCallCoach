@@ -6,7 +6,7 @@ import { QuestionCard } from '../../components/QuestionCard';
 import { PathBadge } from '../../components/PathBadge';
 import { WarningBanner } from '../../components/WarningBanner';
 import { StageProgress } from '../../components/StageProgress';
-import { STAGE_LABELS } from '../../lib/labels';
+import { STAGE_LABELS, SUPPORT_OPTION_CODE_LABELS, SOURCE_DOMAIN_COLORS, SOURCE_DOMAIN_LABEL } from '../../lib/labels';
 import type { WorkflowQuestion } from '@ctcc/shared-types';
 
 // Stage order for advancement.
@@ -217,17 +217,28 @@ export function LiveGuidancePage() {
           {/* Support options */}
           {workflow.supportOptions.length > 0 && (
             <div className="rounded-lg bg-white border border-gray-200 p-4">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                Support options triggered
-              </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Support options triggered
+                </p>
+                <button
+                  onClick={() => navigate(`/session/${sessionId}/support`)}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium whitespace-nowrap"
+                >
+                  Support &amp; Escalation Review →
+                </button>
+              </div>
+              <div className="space-y-1.5">
                 {workflow.supportOptions.map((code) => (
-                  <span
+                  <div
                     key={code}
-                    className="text-xs bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-full px-3 py-1"
+                    className="flex items-center gap-2 text-xs bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-md px-3 py-1.5"
                   >
-                    {code}
-                  </span>
+                    <span className="font-medium">
+                      {SUPPORT_OPTION_CODE_LABELS[code] ?? code.replace(/_/g, ' ')}
+                    </span>
+                    <span className="text-indigo-400 font-mono text-xs opacity-70">{code}</span>
+                  </div>
                 ))}
               </div>
             </div>
@@ -240,9 +251,12 @@ export function LiveGuidancePage() {
             <>
               {guidance.public_policy.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                    Policy guidance
-                  </p>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <p className="text-xs font-semibold text-sky-700 uppercase tracking-wide">
+                      Policy guidance
+                    </p>
+                    <span className="text-xs text-gray-400">Statutory / regulatory</span>
+                  </div>
                   <div className="space-y-3">
                     {guidance.public_policy.map((c) => (
                       <GuidanceCardWidget key={c.code} card={c} />
@@ -252,9 +266,12 @@ export function LiveGuidancePage() {
               )}
               {guidance.acme_operations.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                    Operations guidance
-                  </p>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide">
+                      Operations guidance
+                    </p>
+                    <span className="text-xs text-gray-400">Acme-specific</span>
+                  </div>
                   <div className="space-y-3">
                     {guidance.acme_operations.map((c) => (
                       <GuidanceCardWidget key={c.code} card={c} />
@@ -282,6 +299,7 @@ interface GuidanceCardData {
   code: string;
   title: string;
   summary: string;
+  source_domain?: string;
   do_say_text?: string;
   do_not_say_text?: string;
   warning_text?: string;
@@ -296,7 +314,14 @@ function GuidanceCardWidget({ card }: { card: GuidanceCardData }) {
         onClick={() => setExpanded((v) => !v)}
         className="w-full text-left px-3 py-2.5 flex items-center justify-between gap-2"
       >
-        <span className="font-medium text-gray-800 text-xs leading-snug">{card.title}</span>
+        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+          <span className="font-medium text-gray-800 text-xs leading-snug">{card.title}</span>
+          {card.source_domain && (
+            <span className={`text-xs rounded-full border px-1.5 py-0.5 flex-shrink-0 ${SOURCE_DOMAIN_COLORS[card.source_domain] ?? 'bg-gray-50 border-gray-300 text-gray-700'}`}>
+              {SOURCE_DOMAIN_LABEL[card.source_domain] ?? card.source_domain}
+            </span>
+          )}
+        </div>
         <span className="text-gray-400 text-xs flex-shrink-0">{expanded ? '▲' : '▼'}</span>
       </button>
 
