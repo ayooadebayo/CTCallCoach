@@ -3,7 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getSession, submitWrapUp } from '../../lib/api';
 import { PathBadge } from '../../components/PathBadge';
 import { StageProgress } from '../../components/StageProgress';
+import { AppHeader } from '../../components/AppHeader';
 import { OUTCOME_LABELS, OUTCOME_CODES } from '../../lib/labels';
+
+const inputClass =
+  'w-full border-2 border-govuk-black bg-white px-3 py-2 text-sm text-govuk-black rounded-sm focus:outline-none focus:ring-4 focus:ring-govuk-yellow';
 
 export function WrapUpPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -69,16 +73,19 @@ export function WrapUpPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full text-center space-y-4 p-8">
-          <div className="text-5xl">✓</div>
-          <h2 className="text-2xl font-bold text-gray-900">Call Complete</h2>
+      <div className="min-h-screen bg-govuk-light-grey">
+        <AppHeader />
+        <div className="max-w-md mx-auto px-6 py-16 text-center space-y-5">
+          <div className="w-16 h-16 rounded-full bg-govuk-green flex items-center justify-center mx-auto">
+            <span className="text-white text-3xl font-bold">✓</span>
+          </div>
+          <h2 className="text-2xl font-bold text-govuk-black">Call Complete</h2>
           <p className="text-gray-600">
             Outcome recorded. Case note saved. Session closed.
           </p>
           <button
             onClick={() => navigate('/', { replace: true })}
-            className="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-[2px] bg-govuk-green px-6 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
           >
             Back to scenarios
           </button>
@@ -88,39 +95,35 @@ export function WrapUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div>
-            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-              Call Wrap-Up
-            </span>
-            <h1 className="text-base font-semibold text-gray-900 mt-0.5">
-              {sessionData?.scenarioTitle ?? 'Manual call'}
-            </h1>
-          </div>
-          <StageProgress currentStage="wrap_up" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-govuk-light-grey">
+      <AppHeader
+        pageTitle={sessionData?.scenarioTitle ?? 'Manual call'}
+        right={<StageProgress currentStage="wrap_up" />}
+      />
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         {error && (
-          <div className="mb-6 rounded-md bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-800">
+          <div className="mb-6 rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-4 py-3 text-sm text-govuk-black">
+            <p className="font-bold text-govuk-red mb-1">Error</p>
             {error}
           </div>
         )}
 
         {/* Session summary */}
         {sessionData && (
-          <div className="rounded-lg bg-white border border-gray-200 p-4 mb-6 text-sm">
+          <div className="rounded-sm border border-govuk-mid-grey bg-white px-4 py-3 mb-6 shadow-sm text-sm">
             <div className="flex items-center gap-4 flex-wrap">
               <div>
-                <span className="text-gray-500">Caller: </span>
-                <span className="font-medium">{sessionData.residentLabel}</span>
+                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide mr-1">
+                  Caller
+                </span>
+                <span className="font-semibold text-govuk-black">{sessionData.residentLabel}</span>
               </div>
               {sessionData.primaryPath && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-gray-500">Classification:</span>
+                  <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+                    Classification:
+                  </span>
                   <PathBadge code={sessionData.primaryPath} variant="primary" />
                   {sessionData.overlayPaths.map((p) => (
                     <PathBadge key={p} code={p} variant="overlay" />
@@ -134,13 +137,13 @@ export function WrapUpPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Outcome selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Call outcome <span className="text-red-500">*</span>
+            <label className="block text-sm font-bold text-govuk-black mb-1">
+              Call outcome <span className="text-govuk-red">*</span>
             </label>
             <select
               value={outcomeCode}
               onChange={(e) => setOutcomeCode(e.target.value)}
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={inputClass}
             >
               {OUTCOME_CODES.map((code) => (
                 <option key={code} value={code}>
@@ -152,44 +155,44 @@ export function WrapUpPage() {
 
           {/* Owner next step */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Next step / owner action <span className="text-red-500">*</span>
+            <label className="block text-sm font-bold text-govuk-black mb-1">
+              Next step / owner action <span className="text-govuk-red">*</span>
             </label>
             <input
               type="text"
               value={ownerNextStep}
               onChange={(e) => setOwnerNextStep(e.target.value)}
               placeholder="e.g. Resident to call back with bank details; agent referred to revenues team"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={inputClass}
             />
           </div>
 
           {/* Case note */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Case note summary <span className="text-red-500">*</span>
+            <label className="block text-sm font-bold text-govuk-black mb-1">
+              Case note summary <span className="text-govuk-red">*</span>
             </label>
             <textarea
               value={caseNote}
               onChange={(e) => setCaseNote(e.target.value)}
               rows={5}
               placeholder="Summarise the call: what was discussed, what was offered, any relevant context…"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={inputClass}
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 pt-2">
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-[2px] bg-govuk-green px-6 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
             >
               {submitting ? 'Saving…' : 'Save & Close Call'}
             </button>
             <button
               type="button"
               onClick={() => navigate(`/session/${sessionId}/live`)}
-              className="text-sm text-gray-500 hover:text-gray-700 underline"
+              className="text-sm text-govuk-blue hover:text-govuk-blue-dark font-medium underline focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
             >
               ← Back to guidance
             </button>

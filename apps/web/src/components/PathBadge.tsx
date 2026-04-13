@@ -1,4 +1,4 @@
-import { PATH_LABELS, PATH_COLORS } from '../lib/labels';
+import { PATH_LABELS } from '../lib/labels';
 
 interface PathBadgeProps {
   code: string;
@@ -7,14 +7,16 @@ interface PathBadgeProps {
 
 export function PathBadge({ code, variant = 'primary' }: PathBadgeProps) {
   const label = PATH_LABELS[code] ?? code;
-  const color = PATH_COLORS[code] ?? 'bg-gray-100 text-gray-700';
-  const ring = variant === 'overlay' ? 'ring-1 ring-inset opacity-80' : '';
+  const classes =
+    variant === 'primary'
+      ? 'bg-govuk-blue text-white'
+      : 'bg-govuk-orange text-white';
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${color} ${ring}`}
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${classes}`}
     >
-      {variant === 'overlay' && <span className="mr-1 text-xs">+</span>}
+      {variant === 'overlay' && <span className="mr-1">+</span>}
       {code} — {label}
     </span>
   );

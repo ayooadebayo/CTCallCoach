@@ -21,14 +21,16 @@ interface WarningBannerProps {
 export function WarningBanner({ warnings = [], escalationFlags = [] }: WarningBannerProps) {
   if (warnings.length === 0 && escalationFlags.length === 0) return null;
 
+  const baseCard = 'rounded-sm border border-govuk-mid-grey px-4 py-3 text-sm';
+
   return (
     <div className="space-y-2">
       {warnings.map((w) => (
         <div
           key={w.code}
-          className={`rounded-md border px-4 py-3 text-sm ${SEVERITY_COLORS[w.severity] ?? 'bg-gray-50 border-gray-300 text-gray-800'}`}
+          className={`${baseCard} ${SEVERITY_COLORS[w.severity] ?? 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black'}`}
         >
-          <span className="font-semibold uppercase tracking-wide text-xs mr-2">
+          <span className="font-bold uppercase tracking-wide text-xs mr-2">
             {w.severity === 'high_risk' ? 'High Risk' : w.severity}
           </span>
           {w.message}
@@ -37,9 +39,9 @@ export function WarningBanner({ warnings = [], escalationFlags = [] }: WarningBa
       {escalationFlags.map((f) => (
         <div
           key={f.code}
-          className={`rounded-md border px-4 py-3 text-sm ${SEVERITY_COLORS[f.severity] ?? 'bg-orange-50 border-orange-400 text-orange-900'}`}
+          className={`${baseCard} ${SEVERITY_COLORS[f.severity] ?? 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black'}`}
         >
-          <span className="font-semibold uppercase tracking-wide text-xs mr-2">
+          <span className="font-bold uppercase tracking-wide text-xs mr-2">
             Escalation — {f.severity}
           </span>
           {f.reason}

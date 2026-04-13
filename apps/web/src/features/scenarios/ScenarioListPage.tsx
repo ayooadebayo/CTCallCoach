@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { listScenarios, listAgents, createSession } from '../../lib/api';
 import type { ScenarioSummary, AgentSummary } from '../../lib/api';
 import { PATH_LABELS } from '../../lib/labels';
+import { AppHeader } from '../../components/AppHeader';
 
 const AGENT_STORAGE_KEY = 'ctcc_selected_agent_id';
 
@@ -10,6 +11,12 @@ const DIFFICULTY_LABEL: Record<number, string> = {
   1: 'Introductory',
   2: 'Standard',
   3: 'Advanced',
+};
+
+const DIFFICULTY_BADGE: Record<number, string> = {
+  1: 'bg-govuk-green text-white',
+  2: 'bg-govuk-blue text-white',
+  3: 'bg-govuk-orange text-white',
 };
 
 export function ScenarioListPage() {
@@ -29,7 +36,6 @@ export function ScenarioListPage() {
       .then(([s, a]) => {
         setScenarios(s);
         setAgents(a);
-        // Default to first agent if nothing stored.
         if (!localStorage.getItem(AGENT_STORAGE_KEY) && a.length > 0) {
           setSelectedAgentId(a[0]!.id);
           localStorage.setItem(AGENT_STORAGE_KEY, a[0]!.id);
@@ -62,85 +68,98 @@ export function ScenarioListPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-gray-500">
+      <div className="flex items-center justify-center min-h-screen bg-govuk-light-grey text-gray-500">
         Loading scenarios…
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">CTCallCoach</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Council Tax Payment Difficulty — Demo</p>
-        </div>
+  const agentSelector = (
+    <div className="flex items-center gap-2">
+      <label className="text-blue-100 text-sm font-medium whitespace-nowrap">Agent:</label>
+      <select
+        value={selectedAgentId}
+        onChange={(e) => handleAgentChange(e.target.value)}
+        className="rounded-sm border-0 bg-white px-3 py-1.5 text-sm text-govuk-black focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
+      >
+        {agents.map((a) => (
+          <option key={a.id} value={a.id}>
+            {a.display_name} ({a.team})
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 
-        {/* Agent selector */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 font-medium">Agent:</label>
-          <select
-            value={selectedAgentId}
-            onChange={(e) => handleAgentChange(e.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            {agents.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.display_name} ({a.team})
-              </option>
-            ))}
-          </select>
-        </div>
-      </header>
+  return (
+    <div className="min-h-screen bg-govuk-light-grey">
+      <AppHeader right={agentSelector} />
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         {error && (
-          <div className="mb-6 rounded-md bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-800">
+          <div className="mb-6 rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-4 py-3 text-sm text-govuk-black">
+            <p className="font-bold text-govuk-red mb-1">Error</p>
             {error}
           </div>
         )}
 
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Select a scenario to begin</h2>
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-govuk-black">Select a scenario to begin</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Choose a practice scenario below to start a guided call coaching session.
+          </p>
+        </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {scenarios.map((s) => (
             <div
               key={s.id}
-              className="rounded-lg bg-white border border-gray-200 p-5 shadow-sm flex items-start justify-between gap-4"
+              className="rounded-sm border border-govuk-mid-grey bg-white p-5 shadow-sm"
             >
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-900">{s.title}</h3>
-                  {s.difficulty_level != null && (
-                    <span className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">
-                      {DIFFICULTY_LABEL[s.difficulty_level] ?? `Level ${s.difficulty_level}`}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-gray-600 mb-2">{s.description}</p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-gray-500">Expected path:</span>
-                  <span className="text-xs font-medium text-blue-700">
-                    {s.expected_primary_path} — {PATH_LABELS[s.expected_primary_path] ?? s.expected_primary_path}
-                  </span>
-                  {(s.tags ?? []).map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  {/* Title + difficulty badge */}
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <h3 className="font-bold text-govuk-black text-base">{s.title}</h3>
+                    {s.difficulty_level != null && (
+                      <span
+                        className={`text-xs rounded-full px-2.5 py-0.5 font-bold ${DIFFICULTY_BADGE[s.difficulty_level] ?? 'bg-gray-100 text-gray-700'}`}
+                      >
+                        {DIFFICULTY_LABEL[s.difficulty_level] ?? `Level ${s.difficulty_level}`}
+                      </span>
+                    )}
+                  </div>
 
-              <button
-                onClick={() => handleStart(s.id)}
-                disabled={!selectedAgentId || starting === s.id}
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap flex-shrink-0"
-              >
-                {starting === s.id ? 'Starting…' : 'Start Call →'}
-              </button>
+                  {/* Description */}
+                  <p className="text-sm text-gray-600 mb-3">{s.description}</p>
+
+                  {/* Path + tags */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-gray-500 font-medium">Expected path:</span>
+                    <span className="text-xs font-bold text-govuk-blue bg-sky-50 border border-sky-300 rounded-full px-2.5 py-0.5">
+                      {s.expected_primary_path} —{' '}
+                      {PATH_LABELS[s.expected_primary_path] ?? s.expected_primary_path}
+                    </span>
+                    {(s.tags ?? []).map((t) => (
+                      <span
+                        key={t}
+                        className="text-xs bg-govuk-light-grey text-gray-600 rounded-full px-2 py-0.5 border border-govuk-mid-grey"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <button
+                  onClick={() => handleStart(s.id)}
+                  disabled={!selectedAgentId || starting === s.id}
+                  className="flex-shrink-0 rounded-[2px] bg-govuk-green px-5 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow whitespace-nowrap"
+                >
+                  {starting === s.id ? 'Starting…' : 'Start Call →'}
+                </button>
+              </div>
             </div>
           ))}
         </div>

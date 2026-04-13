@@ -6,7 +6,13 @@ import { QuestionCard } from '../../components/QuestionCard';
 import { PathBadge } from '../../components/PathBadge';
 import { WarningBanner } from '../../components/WarningBanner';
 import { StageProgress } from '../../components/StageProgress';
-import { STAGE_LABELS, SUPPORT_OPTION_CODE_LABELS, SOURCE_DOMAIN_COLORS, SOURCE_DOMAIN_LABEL } from '../../lib/labels';
+import { AppHeader } from '../../components/AppHeader';
+import {
+  STAGE_LABELS,
+  SUPPORT_OPTION_CODE_LABELS,
+  SOURCE_DOMAIN_COLORS,
+  SOURCE_DOMAIN_LABEL,
+} from '../../lib/labels';
 import type { WorkflowQuestion } from '@ctcc/shared-types';
 
 // Stage order for advancement.
@@ -32,7 +38,6 @@ export function LiveGuidancePage() {
     const result = await getSession(sessionId);
     setData(result);
 
-    // Load guidance cards for active paths.
     const paths: string[] = [];
     if (result.workflow.primaryPath) paths.push(result.workflow.primaryPath);
     result.workflow.overlayPaths.forEach((p) => paths.push(p));
@@ -41,7 +46,7 @@ export function LiveGuidancePage() {
         const g = await getGuidance(paths);
         setGuidance(g);
       } catch {
-        // Guidance cards are non-critical — show nothing if they fail.
+        // Guidance cards are non-critical.
       }
     } else {
       setGuidance(null);
@@ -52,7 +57,6 @@ export function LiveGuidancePage() {
     load().catch((e: unknown) => setError(String(e)));
   }, [load]);
 
-  // Redirect to wrap-up when stage reaches wrap_up.
   useEffect(() => {
     if (data?.session.stage === 'wrap_up') {
       navigate(`/session/${sessionId}/wrap-up`, { replace: true });
@@ -103,13 +107,13 @@ export function LiveGuidancePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="rounded-md bg-red-50 border border-red-300 px-6 py-4 text-red-800 max-w-md">
-          <p className="font-semibold mb-1">Error</p>
+      <div className="min-h-screen bg-govuk-light-grey flex items-center justify-center">
+        <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-6 py-4 text-govuk-black max-w-md">
+          <p className="font-bold text-govuk-red mb-1">Error</p>
           <p className="text-sm">{error}</p>
           <button
             onClick={() => { setError(null); load().catch(() => undefined); }}
-            className="mt-3 text-sm underline text-red-700"
+            className="mt-3 text-sm text-govuk-blue hover:text-govuk-blue-dark underline"
           >
             Retry
           </button>
@@ -120,7 +124,7 @@ export function LiveGuidancePage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-500">
+      <div className="min-h-screen bg-govuk-light-grey flex items-center justify-center text-gray-500">
         Loading…
       </div>
     );
@@ -131,34 +135,27 @@ export function LiveGuidancePage() {
   const canAdvance = !nextQuestion && !!STAGE_PROGRESSION[session.stage];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
-          <div>
-            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-              Live Guidance
-            </span>
-            <h1 className="text-base font-semibold text-gray-900 mt-0.5">
-              {session.scenario?.title ?? 'Manual call'}
-            </h1>
-          </div>
-          <StageProgress currentStage={session.stage} />
-        </div>
-      </header>
+    <div className="min-h-screen bg-govuk-light-grey">
+      <AppHeader
+        pageTitle={session.scenario?.title ?? 'Manual call'}
+        right={<StageProgress currentStage={session.stage} />}
+      />
 
       <div className="max-w-5xl mx-auto px-6 py-6 grid grid-cols-3 gap-6">
-        {/* Main column */}
+        {/* ── Main column ── */}
         <div className="col-span-2 space-y-5">
           {/* Classification status */}
-          <div className="rounded-lg bg-white border border-gray-200 p-4">
+          <div className="rounded-sm border border-govuk-mid-grey bg-white p-4 shadow-sm">
             <div className="flex items-center gap-2 flex-wrap mb-2">
-              <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                 Classification
               </span>
               <span className="text-xs text-gray-400">({workflow.classificationStatus})</span>
               <span className="text-xs text-gray-500">
-                Stage: <strong>{STAGE_LABELS[session.stage] ?? session.stage}</strong>
+                Stage:{' '}
+                <strong className="text-govuk-black">
+                  {STAGE_LABELS[session.stage] ?? session.stage}
+                </strong>
               </span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -182,7 +179,7 @@ export function LiveGuidancePage() {
           {/* Next question */}
           {nextQuestion ? (
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-2">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
                 {STAGE_LABELS[nextQuestion.stage] ?? nextQuestion.stage} question
               </p>
               <QuestionCard
@@ -192,22 +189,23 @@ export function LiveGuidancePage() {
               />
             </div>
           ) : canAdvance ? (
-            <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 flex items-center justify-between">
+            <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-blue bg-sky-50 p-4 flex items-center justify-between shadow-sm">
               <div>
-                <p className="text-sm font-medium text-blue-800">
+                <p className="text-sm font-bold text-govuk-black">
                   All {STAGE_LABELS[session.stage] ?? session.stage} questions answered
                 </p>
-                <p className="text-xs text-blue-600 mt-0.5">
+                <p className="text-xs text-gray-600 mt-0.5">
                   Ready to advance to{' '}
                   <strong>
-                    {STAGE_LABELS[STAGE_PROGRESSION[session.stage] ?? ''] ?? STAGE_PROGRESSION[session.stage]}
+                    {STAGE_LABELS[STAGE_PROGRESSION[session.stage] ?? ''] ??
+                      STAGE_PROGRESSION[session.stage]}
                   </strong>
                 </p>
               </div>
               <button
                 onClick={handleAdvanceStage}
                 disabled={advancing}
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-[2px] bg-govuk-blue px-4 py-2 text-sm font-bold text-white hover:bg-govuk-blue-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
               >
                 {advancing ? 'Advancing…' : 'Next Stage →'}
               </button>
@@ -216,14 +214,14 @@ export function LiveGuidancePage() {
 
           {/* Support options */}
           {workflow.supportOptions.length > 0 && (
-            <div className="rounded-lg bg-white border border-gray-200 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <div className="rounded-sm border border-govuk-mid-grey bg-white p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                   Support options triggered
                 </p>
                 <button
                   onClick={() => navigate(`/session/${sessionId}/support`)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium whitespace-nowrap"
+                  className="text-xs text-govuk-blue hover:text-govuk-blue-dark font-bold underline focus:outline-none focus:ring-2 focus:ring-govuk-yellow whitespace-nowrap"
                 >
                   Support &amp; Escalation Review →
                 </button>
@@ -232,12 +230,12 @@ export function LiveGuidancePage() {
                 {workflow.supportOptions.map((code) => (
                   <div
                     key={code}
-                    className="flex items-center gap-2 text-xs bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-md px-3 py-1.5"
+                    className="flex items-center gap-2 text-xs rounded-sm border-l-4 border-l-govuk-green bg-green-50 border border-green-200 px-3 py-2"
                   >
-                    <span className="font-medium">
+                    <span className="font-semibold text-govuk-black">
                       {SUPPORT_OPTION_CODE_LABELS[code] ?? code.replace(/_/g, ' ')}
                     </span>
-                    <span className="text-indigo-400 font-mono text-xs opacity-70">{code}</span>
+                    <span className="text-gray-400 font-mono text-xs opacity-70">{code}</span>
                   </div>
                 ))}
               </div>
@@ -245,19 +243,20 @@ export function LiveGuidancePage() {
           )}
         </div>
 
-        {/* Sidebar — guidance cards */}
+        {/* ── Sidebar: guidance cards ── */}
         <aside className="col-span-1 space-y-4">
-          {guidance && (guidance.public_policy.length > 0 || guidance.acme_operations.length > 0) ? (
+          {guidance &&
+          (guidance.public_policy.length > 0 || guidance.acme_operations.length > 0) ? (
             <>
               {guidance.public_policy.length > 0 && (
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">
-                    <p className="text-xs font-semibold text-sky-700 uppercase tracking-wide">
+                    <p className="text-xs font-bold text-govuk-blue uppercase tracking-wide">
                       Policy guidance
                     </p>
                     <span className="text-xs text-gray-400">Statutory / regulatory</span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {guidance.public_policy.map((c) => (
                       <GuidanceCardWidget key={c.code} card={c} />
                     ))}
@@ -267,12 +266,12 @@ export function LiveGuidancePage() {
               {guidance.acme_operations.length > 0 && (
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">
-                    <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide">
+                    <p className="text-xs font-bold text-govuk-orange uppercase tracking-wide">
                       Operations guidance
                     </p>
                     <span className="text-xs text-gray-400">Acme-specific</span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {guidance.acme_operations.map((c) => (
                       <GuidanceCardWidget key={c.code} card={c} />
                     ))}
@@ -305,45 +304,60 @@ interface GuidanceCardData {
   warning_text?: string;
 }
 
+// Left accent per domain.
+const DOMAIN_LEFT: Record<string, string> = {
+  public_policy: 'border-l-govuk-blue',
+  acme_operations: 'border-l-govuk-orange',
+};
+
 function GuidanceCardWidget({ card }: { card: GuidanceCardData }) {
   const [expanded, setExpanded] = useState(false);
+  const domainLeft = card.source_domain
+    ? (DOMAIN_LEFT[card.source_domain] ?? 'border-l-govuk-mid-grey')
+    : 'border-l-govuk-mid-grey';
 
   return (
-    <div className="rounded-md border border-gray-200 bg-white text-sm shadow-sm">
+    <div
+      className={`rounded-sm border border-govuk-mid-grey border-l-4 bg-white shadow-sm text-sm ${domainLeft}`}
+    >
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full text-left px-3 py-2.5 flex items-center justify-between gap-2"
+        className="w-full text-left px-3 py-2.5 flex items-start justify-between gap-2 focus:outline-none focus:ring-4 focus:ring-govuk-yellow rounded-sm"
       >
-        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-          <span className="font-medium text-gray-800 text-xs leading-snug">{card.title}</span>
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className="font-semibold text-govuk-black text-xs leading-snug">{card.title}</span>
           {card.source_domain && (
-            <span className={`text-xs rounded-full border px-1.5 py-0.5 flex-shrink-0 ${SOURCE_DOMAIN_COLORS[card.source_domain] ?? 'bg-gray-50 border-gray-300 text-gray-700'}`}>
+            <span
+              className={`self-start text-xs rounded-full border px-1.5 py-0.5 font-medium ${SOURCE_DOMAIN_COLORS[card.source_domain] ?? 'bg-gray-50 border-gray-300 text-gray-700'}`}
+            >
               {SOURCE_DOMAIN_LABEL[card.source_domain] ?? card.source_domain}
             </span>
           )}
         </div>
-        <span className="text-gray-400 text-xs flex-shrink-0">{expanded ? '▲' : '▼'}</span>
+        <span className="text-gray-400 text-xs flex-shrink-0 mt-0.5">{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
-        <div className="px-3 pb-3 space-y-2 border-t border-gray-100 pt-2">
-          <p className="text-xs text-gray-600">{card.summary}</p>
+        <div className="px-3 pb-3 space-y-2 border-t border-govuk-mid-grey pt-2">
+          <p className="text-xs text-govuk-black">{card.summary}</p>
           {card.warning_text && (
-            <p className="text-xs text-red-700 bg-red-50 rounded px-2 py-1 border border-red-200">
-              <strong>⚠ </strong>
-              {card.warning_text}
-            </p>
+            <div className="rounded-sm border-l-4 border-l-govuk-red bg-red-50 px-2 py-1.5">
+              <p className="text-xs text-govuk-black">
+                <strong className="text-govuk-red">Warning: </strong>
+                {card.warning_text}
+              </p>
+            </div>
           )}
           {card.do_say_text && (
-            <div>
-              <p className="text-xs font-semibold text-green-700 mb-0.5">Do say:</p>
-              <p className="text-xs text-gray-700 italic">"{card.do_say_text}"</p>
+            <div className="rounded-sm border-l-4 border-l-govuk-green bg-green-50 px-2 py-1.5">
+              <p className="text-xs font-bold text-govuk-green-dark mb-0.5">Do say:</p>
+              <p className="text-xs text-govuk-black italic">"{card.do_say_text}"</p>
             </div>
           )}
           {card.do_not_say_text && (
-            <div>
-              <p className="text-xs font-semibold text-red-700 mb-0.5">Do not say:</p>
-              <p className="text-xs text-gray-700 italic">"{card.do_not_say_text}"</p>
+            <div className="rounded-sm border-l-4 border-l-govuk-red bg-red-50 px-2 py-1.5">
+              <p className="text-xs font-bold text-govuk-red mb-0.5">Do not say:</p>
+              <p className="text-xs text-govuk-black italic">"{card.do_not_say_text}"</p>
             </div>
           )}
         </div>

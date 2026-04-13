@@ -107,14 +107,16 @@ export const CLASSIFICATION_STATUS_LABELS: Record<string, string> = {
 
 // ─── Severity colours for warnings / escalations ──────────────────────────────
 
+// Full-card style: left accent border + tinted background.
+// Used by WarningBanner. EscalationFlagCard defines its own severity styles.
 export const SEVERITY_COLORS: Record<string, string> = {
-  informational: 'bg-blue-50 border-blue-300 text-blue-800',
-  caution: 'bg-yellow-50 border-yellow-400 text-yellow-900',
-  high_risk: 'bg-red-50 border-red-500 text-red-900',
-  low: 'bg-blue-50 border-blue-300 text-blue-800',
-  medium: 'bg-yellow-50 border-yellow-400 text-yellow-900',
-  high: 'bg-orange-50 border-orange-400 text-orange-900',
-  critical: 'bg-red-50 border-red-600 text-red-900',
+  informational: 'border-l-4 border-l-govuk-blue bg-sky-50 text-govuk-black',
+  caution: 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black',
+  high_risk: 'border-l-4 border-l-govuk-red bg-red-50 text-govuk-black',
+  low: 'border-l-4 border-l-gray-400 bg-gray-50 text-govuk-black',
+  medium: 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black',
+  high: 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black',
+  critical: 'border-l-4 border-l-govuk-red bg-red-50 text-govuk-black',
 };
 
 // ─── Support option labels and domain colours ─────────────────────────────────
@@ -142,8 +144,8 @@ export const SOURCE_DOMAIN_LABEL: Record<string, string> = {
 };
 
 export const SOURCE_DOMAIN_COLORS: Record<string, string> = {
-  public_policy: 'bg-sky-50 border-sky-300 text-sky-800',
-  acme_operations: 'bg-amber-50 border-amber-300 text-amber-800',
+  public_policy: 'bg-sky-50 border-sky-400 text-govuk-blue',
+  acme_operations: 'bg-amber-50 border-amber-400 text-amber-900',
 };
 
 // ─── Escalation category labels ───────────────────────────────────────────────

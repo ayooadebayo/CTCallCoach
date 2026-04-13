@@ -16,28 +16,28 @@ export function SupportOptionCard({ option }: SupportOptionCardProps) {
     SUPPORT_CATEGORY_LABELS[option.category] ?? option.category.replace(/_/g, ' ');
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-      {/* Collapsed header — always visible */}
+    <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-green bg-white shadow-sm">
+      {/* Collapsed header */}
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3"
+        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 focus:outline-none focus:ring-4 focus:ring-govuk-yellow rounded-sm"
       >
         <div className="flex items-center gap-2 flex-wrap min-w-0">
-          <span className="font-semibold text-sm text-gray-900 truncate">
+          <span className="font-semibold text-sm text-govuk-black truncate">
             {option.label}
           </span>
-          <span className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5 flex-shrink-0">
+          <span className="text-xs text-gray-600 bg-govuk-light-grey border border-govuk-mid-grey rounded-full px-2 py-0.5 flex-shrink-0">
             {categoryLabel}
           </span>
           {option.source_domain && (
             <span
-              className={`text-xs rounded-full border px-2 py-0.5 flex-shrink-0 ${SOURCE_DOMAIN_COLORS[option.source_domain] ?? 'bg-gray-100 text-gray-600 border-gray-300'}`}
+              className={`text-xs rounded-full border px-2 py-0.5 flex-shrink-0 font-medium ${SOURCE_DOMAIN_COLORS[option.source_domain] ?? 'bg-gray-100 text-gray-600 border-gray-300'}`}
             >
               {SOURCE_DOMAIN_LABEL[option.source_domain] ?? option.source_domain}
             </span>
           )}
           {option.requires_specialist_follow_up && (
-            <span className="text-xs bg-red-50 border border-red-300 text-red-700 rounded-full px-2 py-0.5 flex-shrink-0 font-medium">
+            <span className="text-xs bg-govuk-red text-white rounded-full px-2 py-0.5 flex-shrink-0 font-bold">
               Specialist required
             </span>
           )}
@@ -47,21 +47,21 @@ export function SupportOptionCard({ option }: SupportOptionCardProps) {
 
       {/* Expanded body */}
       {expanded && (
-        <div className="border-t border-gray-100 px-4 pb-4 pt-3 space-y-3">
+        <div className="border-t border-govuk-mid-grey px-4 pb-4 pt-3 space-y-3">
           {/* What to say to the resident */}
-          <div className="rounded-md bg-green-50 border border-green-200 px-3 py-2.5">
-            <p className="text-xs font-semibold text-green-800 mb-1">
+          <div className="rounded-sm border-l-4 border-l-govuk-green bg-green-50 px-3 py-2.5">
+            <p className="text-xs font-bold text-govuk-green-dark mb-1 uppercase tracking-wide">
               What to say to the resident
             </p>
-            <p className="text-sm text-green-900">{option.resident_explanation}</p>
+            <p className="text-sm text-govuk-black">{option.resident_explanation}</p>
           </div>
 
           {/* Internal handling note */}
-          <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2.5">
-            <p className="text-xs font-semibold text-amber-800 mb-1">
+          <div className="rounded-sm border-l-4 border-l-govuk-orange bg-amber-50 px-3 py-2.5">
+            <p className="text-xs font-bold text-amber-900 mb-1 uppercase tracking-wide">
               Internal handling note
             </p>
-            <p className="text-sm text-amber-900">{option.internal_handling_note}</p>
+            <p className="text-sm text-govuk-black">{option.internal_handling_note}</p>
           </div>
         </div>
       )}

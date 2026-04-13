@@ -4,11 +4,8 @@ import { getSession, submitResponse, advanceStage } from '../../lib/api';
 import type { SessionDetailResponse, SubmitResponseBody } from '../../lib/api';
 import { QuestionCard } from '../../components/QuestionCard';
 import { StageProgress } from '../../components/StageProgress';
+import { AppHeader } from '../../components/AppHeader';
 import type { WorkflowQuestion } from '@ctcc/shared-types';
-
-// Intake handles the 'intake' stage questions.
-// When there are no more intake questions (nextRequiredQuestion is null while stage is intake),
-// it auto-advances to classification and redirects to /live.
 
 export function CallIntakePage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -32,19 +29,16 @@ export function CallIntakePage() {
     load();
   }, [load]);
 
-  // After loading, check if intake is complete.
   useEffect(() => {
     if (!data || !sessionId) return;
     const stage = data.session.stage;
     const nextQ = data.workflow.nextRequiredQuestion;
 
     if (stage === 'intake' && !nextQ) {
-      // Intake done — advance to classification, then go to live guidance.
       advanceStage(sessionId, 'classification')
         .then(() => navigate(`/session/${sessionId}/live`, { replace: true }))
         .catch((e: unknown) => setError(String(e)));
     } else if (stage !== 'intake') {
-      // Already past intake.
       navigate(`/session/${sessionId}/live`, { replace: true });
     }
   }, [data, sessionId, navigate]);
@@ -74,9 +68,9 @@ export function CallIntakePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="rounded-md bg-red-50 border border-red-300 px-6 py-4 text-red-800 max-w-md">
-          <p className="font-semibold mb-1">Error</p>
+      <div className="min-h-screen bg-govuk-light-grey flex items-center justify-center">
+        <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-6 py-4 text-govuk-black max-w-md">
+          <p className="font-bold text-govuk-red mb-1">Error</p>
           <p className="text-sm">{error}</p>
         </div>
       </div>
@@ -85,7 +79,7 @@ export function CallIntakePage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-500">
+      <div className="min-h-screen bg-govuk-light-grey flex items-center justify-center text-gray-500">
         Loading…
       </div>
     );
@@ -95,50 +89,49 @@ export function CallIntakePage() {
   const nextQuestion = workflow.nextRequiredQuestion;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <div>
-            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-              Call Intake
-            </span>
-            <h1 className="text-base font-semibold text-gray-900 mt-0.5">
-              {session.scenario?.title ?? 'Manual call'}
-            </h1>
-          </div>
-          <StageProgress currentStage={session.stage} />
-        </div>
-      </header>
+    <div className="min-h-screen bg-govuk-light-grey">
+      <AppHeader
+        pageTitle={session.scenario?.title ?? 'Manual call'}
+        right={<StageProgress currentStage={session.stage} />}
+      />
 
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-6">
-        {/* Resident info */}
-        <div className="rounded-lg bg-white border border-gray-200 p-4 text-sm">
-          <div className="flex items-center gap-4">
+        {/* Caller info strip */}
+        <div className="rounded-sm border border-govuk-mid-grey bg-white px-4 py-3 shadow-sm">
+          <div className="flex items-center gap-6 flex-wrap text-sm">
             <div>
-              <span className="text-gray-500">Caller: </span>
-              <span className="font-medium text-gray-900">{session.resident.display_label}</span>
+              <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide mr-1">
+                Caller
+              </span>
+              <span className="font-semibold text-govuk-black">
+                {session.resident.display_label}
+              </span>
             </div>
             {session.scenario && (
               <div>
-                <span className="text-gray-500">Scenario: </span>
-                <span className="font-medium text-gray-900">{session.scenario.title}</span>
+                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide mr-1">
+                  Scenario
+                </span>
+                <span className="font-semibold text-govuk-black">{session.scenario.title}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Question */}
+        {/* Stage label */}
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+          Intake question
+        </p>
+
+        {/* Question or completion notice */}
         {nextQuestion ? (
-          <div>
-            <p className="text-sm text-gray-500 mb-2 font-medium">Intake question</p>
-            <QuestionCard
-              question={nextQuestion}
-              onSubmit={(v) => handleAnswer(nextQuestion, v)}
-              submitting={submitting}
-            />
-          </div>
+          <QuestionCard
+            question={nextQuestion}
+            onSubmit={(v) => handleAnswer(nextQuestion, v)}
+            submitting={submitting}
+          />
         ) : (
-          <div className="rounded-lg bg-green-50 border border-green-300 px-4 py-3 text-sm text-green-800">
+          <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-green bg-green-50 px-4 py-3 text-sm text-govuk-black">
             Intake complete — advancing to call guidance…
           </div>
         )}
