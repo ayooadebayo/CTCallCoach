@@ -178,6 +178,44 @@ export function getGuidance(paths: string[]): Promise<GuidanceResponse> {
   return request('GET', `/guidance?${qs}`);
 }
 
+// ─── AI assistance ───────────────────────────────────────────────────────────
+
+export interface QuestionRationaleResponse {
+  rationale: string | null;
+  learning_tip: string | null;
+}
+
+export function getQuestionRationale(
+  questionCode: string,
+  sessionId: string,
+): Promise<QuestionRationaleResponse> {
+  return request(
+    'GET',
+    `/ai/question-rationale?question_code=${encodeURIComponent(questionCode)}&session_id=${encodeURIComponent(sessionId)}`,
+  );
+}
+
+export interface WrapUpSummaryResponse {
+  summary_text: string;
+  suggested_next_step: string;
+  flags: string[];
+  source: 'ai' | 'template';
+}
+
+export function generateWrapUpSummary(sessionId: string): Promise<WrapUpSummaryResponse> {
+  return request('POST', '/ai/wrapup-summary', { call_session_id: sessionId });
+}
+
+export interface CoachingFeedbackResponse {
+  well_handled: string[] | null;
+  could_improve: string[] | null;
+  learning_recommendation: string | null;
+}
+
+export function getCoachingFeedback(sessionId: string): Promise<CoachingFeedbackResponse> {
+  return request('GET', `/ai/coaching/${encodeURIComponent(sessionId)}`);
+}
+
 // ─── Wrap-up ──────────────────────────────────────────────────────────────────
 
 export interface WrapUpBody {

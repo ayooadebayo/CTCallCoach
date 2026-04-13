@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { labelFor } from '../lib/labels';
 import type { WorkflowQuestion } from '@ctcc/shared-types';
+import type { QuestionRationaleResponse } from '../lib/api';
 
 interface QuestionCardProps {
   question: WorkflowQuestion;
   onSubmit: (value: { answer_text?: string; answer_boolean?: boolean; answer_number?: number }) => void;
   submitting?: boolean;
+  /** AI-generated rationale — shown in the "why it matters" box when available */
+  aiRationale?: QuestionRationaleResponse | null;
 }
 
 const inputClass =
@@ -14,7 +17,7 @@ const inputClass =
 const btnPrimary =
   'rounded-[2px] bg-govuk-green px-5 py-2 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow';
 
-export function QuestionCard({ question, onSubmit, submitting = false }: QuestionCardProps) {
+export function QuestionCard({ question, onSubmit, submitting = false, aiRationale }: QuestionCardProps) {
   const [textValue, setTextValue] = useState('');
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [numberValue, setNumberValue] = useState('');
@@ -49,12 +52,27 @@ export function QuestionCard({ question, onSubmit, submitting = false }: Questio
         {question.question_text}
       </p>
 
-      {/* Why it matters */}
-      {question.why_it_matters_text && (
+      {/* Why it matters — prefer AI rationale when available, fall back to curated text */}
+      {(aiRationale?.rationale || question.why_it_matters_text) && (
         <div className="bg-govuk-light-grey rounded-sm px-3 py-2 mb-4">
-          <p className="text-xs text-govuk-black italic leading-relaxed">
-            {question.why_it_matters_text}
-          </p>
+          {aiRationale?.rationale ? (
+            <>
+              <p className="text-xs text-govuk-black italic leading-relaxed">
+                {aiRationale.rationale}
+              </p>
+              {aiRationale.learning_tip && (
+                <p className="text-xs text-govuk-blue mt-1 leading-relaxed">
+                  <span className="font-semibold not-italic">Tip: </span>
+                  {aiRationale.learning_tip}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-1 not-italic">AI-assisted</p>
+            </>
+          ) : (
+            <p className="text-xs text-govuk-black italic leading-relaxed">
+              {question.why_it_matters_text}
+            </p>
+          )}
         </div>
       )}
 

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter @ctcc/api typecheck)",
+      "Bash(timeout 10 npx tsx src/server/index.ts)",
+      "Bash(npx tsx:*)",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(python -m json.tool)",
+      "Bash(grep -v \"prisma:query\\\\|ExperimentalWarn\\\\|Support for\\\\|Use \\\\`node\")",
+      "Bash(grep -v \"prisma:\\\\|ExperimentalWarn\\\\|Support for\\\\|Use \\\\`node\")",
+      "Bash(pkill -f \"tsx src/server\")",
+      "Bash(grep -v \"Use \\\\`node\")",
+      "Bash(curl -s -X POST http://localhost:3001/sessions -H 'Content-Type: application/json' -d '{\"agent_id\": \"04630fa5-4e17-4c08-8454-fc4c2f8d80c4\", \"session_mode\": \"manual_test\"}')",
+      "Bash(python -c ':*)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 21592 /F)",
+      "Bash(cmd /c \"taskkill /PID 21592 /F\")",
+      "Bash(pnpm --filter @ctcc/web typecheck)",
+      "Bash(pnpm:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

@@ -1,12 +1,24 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getSession, submitResponse, advanceStage, getGuidance } from '../../lib/api';
-import type { SessionDetailResponse, GuidanceResponse, SubmitResponseBody } from '../../lib/api';
+import {
+  getSession,
+  submitResponse,
+  advanceStage,
+  getGuidance,
+  getQuestionRationale,
+} from '../../lib/api';
+import type {
+  SessionDetailResponse,
+  GuidanceResponse,
+  SubmitResponseBody,
+  QuestionRationaleResponse,
+} from '../../lib/api';
 import { QuestionCard } from '../../components/QuestionCard';
 import { PathBadge } from '../../components/PathBadge';
 import { WarningBanner } from '../../components/WarningBanner';
 import { StageProgress } from '../../components/StageProgress';
 import { AppHeader } from '../../components/AppHeader';
+import { SessionNav } from '../../components/SessionNav';
 import {
   STAGE_LABELS,
   SUPPORT_OPTION_CODE_LABELS,
@@ -15,7 +27,6 @@ import {
 } from '../../lib/labels';
 import type { WorkflowQuestion } from '@ctcc/shared-types';
 
-// Stage order for advancement.
 const STAGE_PROGRESSION: Record<string, string> = {
   classification: 'fact_gathering',
   fact_gathering: 'path_determination',
@@ -32,6 +43,9 @@ export function LiveGuidancePage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [advancing, setAdvancing] = useState(false);
+
+  // AI question rationale — fetched fire-and-forget when question changes
+  const [aiRationale, setAiRationale] = useState<QuestionRationaleResponse | null>(null);
 
   const load = useCallback(async () => {
     if (!sessionId) return;
@@ -57,6 +71,19 @@ export function LiveGuidancePage() {
     load().catch((e: unknown) => setError(String(e)));
   }, [load]);
 
+  // Fetch AI rationale when the next question changes.
+  useEffect(() => {
+    if (!sessionId || !data?.workflow.nextRequiredQuestion) {
+      setAiRationale(null);
+      return;
+    }
+    const code = data.workflow.nextRequiredQuestion.code;
+    // Fire-and-forget — does not block question rendering.
+    getQuestionRationale(code, sessionId)
+      .then((r) => setAiRationale(r))
+      .catch(() => setAiRationale(null));
+  }, [sessionId, data?.workflow.nextRequiredQuestion?.code]);
+
   useEffect(() => {
     if (data?.session.stage === 'wrap_up') {
       navigate(`/session/${sessionId}/wrap-up`, { replace: true });
@@ -72,6 +99,7 @@ export function LiveGuidancePage() {
   ) {
     if (!sessionId) return;
     setSubmitting(true);
+    setAiRationale(null); // clear stale rationale immediately
     try {
       const body: SubmitResponseBody = {
         call_session_id: sessionId,
@@ -140,6 +168,7 @@ export function LiveGuidancePage() {
         pageTitle={session.scenario?.title ?? 'Manual call'}
         right={<StageProgress currentStage={session.stage} />}
       />
+      {sessionId && <SessionNav sessionId={sessionId} current="live" />}
 
       <div className="max-w-5xl mx-auto px-6 py-6 grid grid-cols-3 gap-6">
         {/* ── Main column ── */}
@@ -186,6 +215,7 @@ export function LiveGuidancePage() {
                 question={nextQuestion}
                 onSubmit={(v) => handleAnswer(nextQuestion, v)}
                 submitting={submitting}
+                aiRationale={aiRationale}
               />
             </div>
           ) : canAdvance ? (
@@ -304,7 +334,6 @@ interface GuidanceCardData {
   warning_text?: string;
 }
 
-// Left accent per domain.
 const DOMAIN_LEFT: Record<string, string> = {
   public_policy: 'border-l-govuk-blue',
   acme_operations: 'border-l-govuk-orange',
@@ -317,9 +346,7 @@ function GuidanceCardWidget({ card }: { card: GuidanceCardData }) {
     : 'border-l-govuk-mid-grey';
 
   return (
-    <div
-      className={`rounded-sm border border-govuk-mid-grey border-l-4 bg-white shadow-sm text-sm ${domainLeft}`}
-    >
+    <div className={`rounded-sm border border-govuk-mid-grey border-l-4 bg-white shadow-sm text-sm ${domainLeft}`}>
       <button
         onClick={() => setExpanded((v) => !v)}
         className="w-full text-left px-3 py-2.5 flex items-start justify-between gap-2 focus:outline-none focus:ring-4 focus:ring-govuk-yellow rounded-sm"
@@ -327,9 +354,7 @@ function GuidanceCardWidget({ card }: { card: GuidanceCardData }) {
         <div className="flex flex-col gap-1 min-w-0">
           <span className="font-semibold text-govuk-black text-xs leading-snug">{card.title}</span>
           {card.source_domain && (
-            <span
-              className={`self-start text-xs rounded-full border px-1.5 py-0.5 font-medium ${SOURCE_DOMAIN_COLORS[card.source_domain] ?? 'bg-gray-50 border-gray-300 text-gray-700'}`}
-            >
+            <span className={`self-start text-xs rounded-full border px-1.5 py-0.5 font-medium ${SOURCE_DOMAIN_COLORS[card.source_domain] ?? 'bg-gray-50 border-gray-300 text-gray-700'}`}>
               {SOURCE_DOMAIN_LABEL[card.source_domain] ?? card.source_domain}
             </span>
           )}

@@ -6,6 +6,7 @@ import { PathBadge } from '../../components/PathBadge';
 import { WarningBanner } from '../../components/WarningBanner';
 import { StageProgress } from '../../components/StageProgress';
 import { AppHeader } from '../../components/AppHeader';
+import { SessionNav } from '../../components/SessionNav';
 import { EscalationFlagCard, SEVERITY_SORT } from '../../components/EscalationFlagCard';
 import { SupportOptionCard } from '../../components/SupportOptionCard';
 import {
@@ -121,6 +122,8 @@ export function SupportReviewPage() {
           </div>
         }
       />
+
+      {sessionId && <SessionNav sessionId={sessionId} current="support" />}
 
       {/* Page title strip */}
       <div className="bg-white border-b border-govuk-mid-grey">

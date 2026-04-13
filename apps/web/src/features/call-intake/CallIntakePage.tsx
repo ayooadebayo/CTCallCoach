@@ -5,6 +5,7 @@ import type { SessionDetailResponse, SubmitResponseBody } from '../../lib/api';
 import { QuestionCard } from '../../components/QuestionCard';
 import { StageProgress } from '../../components/StageProgress';
 import { AppHeader } from '../../components/AppHeader';
+import { SessionNav } from '../../components/SessionNav';
 import type { WorkflowQuestion } from '@ctcc/shared-types';
 
 export function CallIntakePage() {
@@ -94,6 +95,7 @@ export function CallIntakePage() {
         pageTitle={session.scenario?.title ?? 'Manual call'}
         right={<StageProgress currentStage={session.stage} />}
       />
+      {sessionId && <SessionNav sessionId={sessionId} current="intake" />}
 
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-6">
         {/* Caller info strip */}
@@ -123,7 +125,6 @@ export function CallIntakePage() {
           Intake question
         </p>
 
-        {/* Question or completion notice */}
         {nextQuestion ? (
           <QuestionCard
             question={nextQuestion}
