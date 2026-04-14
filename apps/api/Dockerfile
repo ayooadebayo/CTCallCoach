@@ -35,4 +35,4 @@ RUN pnpm --filter api build
 
 EXPOSE 3001
 WORKDIR /app/apps/api
-CMD sh -c "pnpm exec prisma migrate deploy && pnpm exec tsx src/db/seeds/index.ts && node /app/apps/api/dist/server/index.js"
+CMD ["/bin/sh", "-c", "pnpm exec prisma migrate deploy && pnpm exec tsx src/db/seeds/index.ts && node /app/apps/api/dist/server/index.js"]
