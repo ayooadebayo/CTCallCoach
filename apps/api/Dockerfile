@@ -1,4 +1,6 @@
 FROM node:20-alpine AS base
+# Prisma linux-musl engine links libssl.so.1.1; Alpine ships OpenSSL 3 only without this package
+RUN apk add --no-cache openssl1.1-compat
 RUN npm install -g pnpm
 WORKDIR /app
 
