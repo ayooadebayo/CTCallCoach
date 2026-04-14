@@ -118,6 +118,15 @@ export function submitResponse(body: SubmitResponseBody): Promise<SubmitResponse
   return request('POST', '/workflow/respond', body);
 }
 
+export interface SessionResponseItem {
+  stage: string;
+  questionCode: string;
+  questionText: string;
+  questionType: string;
+  answerOptions: string[] | null;
+  answerValue: string;
+}
+
 export interface WorkflowNextResponse {
   current_stage: string;
   primary_path: string | null;
@@ -129,6 +138,7 @@ export interface WorkflowNextResponse {
   escalation_flags: WorkflowEngineOutput['escalationFlags'];
   warnings: WorkflowEngineOutput['warnings'];
   allowed_outcomes: string[];
+  session_responses: SessionResponseItem[];
 }
 
 export function getWorkflowNext(sessionId: string): Promise<WorkflowNextResponse> {
@@ -166,6 +176,7 @@ export interface GuidanceCard {
   do_say_text?: string;
   do_not_say_text?: string;
   warning_text?: string;
+  source_url?: string | null;
 }
 
 export interface GuidanceResponse {
@@ -214,6 +225,64 @@ export interface CoachingFeedbackResponse {
 
 export function getCoachingFeedback(sessionId: string): Promise<CoachingFeedbackResponse> {
   return request('GET', `/ai/coaching/${encodeURIComponent(sessionId)}`);
+}
+
+// ─── Admin transparency ───────────────────────────────────────────────────────
+
+export interface AdminVersionEntry {
+  id: string;
+  version_label: string;
+  status: string;
+  description: string | null;
+  created_at: string;
+}
+
+export interface AdminVersionsResponse {
+  workflow_versions: AdminVersionEntry[];
+  content_versions: AdminVersionEntry[];
+  prompt_versions: AdminVersionEntry[];
+}
+
+export function getAdminVersions(): Promise<AdminVersionsResponse> {
+  return request('GET', '/admin/versions');
+}
+
+export interface AdminEnquiryType {
+  id: string;
+  code: string;
+  label: string;
+  description: string | null;
+  category: string | null;
+  is_overlay: boolean;
+}
+
+export interface AdminSupportOption {
+  code: string;
+  label: string;
+  category: string;
+  source_domain: string | null;
+  requires_specialist_follow_up: boolean;
+}
+
+export interface AdminEscalationRule {
+  rule_code: string;
+  escalation_code: string;
+  category: string;
+  severity: string;
+  description: string;
+  trigger_condition_keys: string[];
+}
+
+export interface AdminCatalogResponse {
+  enquiry_types: AdminEnquiryType[];
+  support_options: AdminSupportOption[];
+  escalation_rules: AdminEscalationRule[];
+  scenario_count: number;
+  question_count: number;
+}
+
+export function getAdminCatalog(): Promise<AdminCatalogResponse> {
+  return request('GET', '/admin/catalog');
 }
 
 // ─── Wrap-up ──────────────────────────────────────────────────────────────────

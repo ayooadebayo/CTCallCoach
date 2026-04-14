@@ -57,28 +57,35 @@ As of your current codebase state:
 | UI design | ⚠️ Functional only | Plain white, minimal styling, no brand |
 | AI layer | ❌ Not started | All folders empty (.gitkeep only) |
 | Landing page | ❌ Not started | Does not exist |
-| Admin view | ❌ Not started | Route stub only |
+| Admin view | ✅ Complete | AdminPage.tsx, /admin/versions + /admin/catalog routes live |
+| Ocelot UX adds | ❌ Not started | Stage checkpoint, answers panel, source links pending |
 | Deployment config | ❌ Not started | No Dockerfile, no Vercel config |
 | Tests | ❌ Not started | Intentionally deferred for now |
 
 **What this means:** You can run a full call right now, but it looks rough and
 there is no public-facing home, no AI intelligence visible, and nowhere to host it.
-The 6 prompts below fix all of that.
+The 7 prompts below fix all of that.
 
 ---
 
-## The 6-Prompt Journey: Overview
+## The 7-Prompt Journey: Overview
 
 ```
-Prompt 1 → GDS UI overhaul          (makes it look like a real civic tool)
-Prompt 2 → OpenAI AI layer          (makes it feel intelligent)
-Prompt 3 → Admin transparency view  (makes it explainable to investors/leaders)
-Prompt 4 → Deployment config        (makes it hostable)
-Prompt 5 → Landing page             (makes it presentable to the world)
-Prompt 6 → Final verification       (makes it demo-ready and catches issues)
+Prompt 1  → GDS UI overhaul           (makes it look like a real civic tool)
+Prompt 2  → OpenAI AI layer           (makes it feel intelligent)
+Prompt 3  → Admin transparency view   (makes it explainable to investors/leaders)
+Prompt 3B → Ocelot-style UX additions (makes it feel like production-grade civic guidance)
+Prompt 4  → Deployment config         (makes it hostable)
+Prompt 5  → Landing page              (makes it presentable to the world)
+Prompt 6  → Final verification        (makes it demo-ready and catches issues)
 ```
 
 Each builds on the last. Do not skip or reorder them.
+
+> **If Prompt 3 (Admin) is already complete:** go straight to Prompt 3B next.
+> Prompt 3B is purely additive — it touches advisor-facing screens and adds one
+> new section to the admin page. It does not change the workflow engine, session
+> logic, or any existing component's data flow.
 
 ---
 
@@ -359,6 +366,340 @@ Imagine showing this screen to a GovTech investor for 60 seconds.
 Can they see: (a) that the system is versioned and auditable, (b) that AI is
 narrow and bounded, (c) that policy and operations are separated?
 If yes — this screen is doing its job.
+
+---
+
+## PROMPT 3B — Ocelot-Style Guidance UX Additions
+
+### What Ocelot is and why it matters here
+
+Ocelot is HMRC's internal interactive guidance delivery platform — the system
+that powers tools like CEST (Check Employment Status for Tax). It is not a
+design system. It is a UX philosophy built on top of GOV.UK Frontend:
+
+- One question at a time — the user is never overwhelmed
+- Explicit stage outcome surfacing — at each checkpoint, the tool summarises
+  what has been established so far before moving forward
+- Section-by-section answer review — the user can see a running record of
+  what they have already answered, organised by stage
+- Policy source transparency — guidance items link to the underlying manual
+  page so the user can verify what the tool is saying
+
+CTCallCoach already applies the "one question at a time" principle.
+This prompt adds the other three as lightweight UI enhancements that do not
+change any workflow logic, routing, or data model.
+
+### Why this prompt is placed here (after Admin, before Deployment)
+
+These are advisor-facing UX improvements. They must be added after the core
+screens are built and styled (Prompts 1–3) but before deployment (Prompt 4),
+so the live site reflects these enhancements from day one.
+
+They are non-breaking: no routes change, no database changes, no engine
+changes. If any part of this prompt fails, the product still runs correctly
+without the new additions.
+
+### What it adds technically
+
+**Addition 1 — Stage completion checkpoint card**
+
+When the workflow advances from one stage to the next (the `advance_stage`
+action fires in the engine), display a `StageCheckpointCard` component on the
+`LiveGuidancePage` between the old stage and the new question.
+
+The card shows:
+- "Stage complete: [stage label]" as the heading
+- The classification established so far: primary path + any overlays
+- Number of questions answered in the completed stage
+- A "Continue →" button that dismisses the card and renders the next question
+
+Implementation:
+- Create `apps/web/src/components/StageCheckpointCard.tsx`
+- In `LiveGuidancePage.tsx`: track a `stageJustCompleted` boolean in state.
+  When the `GET /workflow/:sessionId/next` response returns a `stage_advanced: true`
+  flag (or when `current_stage` in the response differs from the previous call's
+  `current_stage`), set `stageJustCompleted = true` and store the completed stage label.
+  Render `<StageCheckpointCard />` instead of `<QuestionCard />` until dismissed.
+- The card uses GDS styling: white background, govuk-blue left border (4px),
+  green classification badge, grey question count, govuk-blue "Continue" button.
+- If the workflow engine response does not include an explicit `stage_advanced`
+  flag, detect stage advancement by comparing `response.workflow_state.current_stage`
+  to the previously stored stage value in component state.
+
+**Addition 2 — Answers captured panel**
+
+Add a collapsible "Answers so far" panel to the right sidebar of `LiveGuidancePage`,
+below the existing guidance cards panel.
+
+The panel shows all question-response pairs recorded in the current session,
+grouped by stage. Each row: question text (truncated to 80 chars) → answer value.
+
+Implementation:
+- Create `apps/web/src/components/AnswersCapturedPanel.tsx`
+- The panel reads from the existing session responses already returned by
+  `GET /workflow/:sessionId/next` in the `session_responses` array (or equivalent
+  field — check the actual response shape from the engine). No new API endpoint needed.
+- If the response does not already include session responses, add them to the
+  `GET /workflow/:sessionId/next` response body from the sessions service.
+  The data already exists in the DB (`QuestionResponse` table).
+- Render as: collapsed by default with "Answers so far (N)" header showing count.
+  Expand/collapse on click. When expanded, group by stage with a small grey
+  stage label row and answer rows beneath.
+- GDS styling: light grey background (#f3f2f1), monospace answer values,
+  chevron toggle icon.
+
+**Addition 3 — Guidance card source links**
+
+Each guidance card in the sidebar already has a `source_domain` field
+(`public_policy` or `acme_operations`) and a `label` and `description`.
+Add a "View source guidance →" link at the bottom of each card.
+
+Implementation:
+- In the guidance card data (content-bundles JSON), add an optional `source_url`
+  field to the `SupportOption` or `GuidanceItem` type in `@ctcc/shared-types`.
+  This is a nullable string.
+- For `public_policy` cards: set `source_url` to the relevant GOV.UK guidance page.
+  Use these real URLs for the council tax payment difficulty domain:
+  - Council Tax general: `https://www.gov.uk/council-tax`
+  - Payment difficulty / hardship: `https://www.gov.uk/council-tax/pay-your-council-tax`
+  - Council Tax Reduction: `https://www.gov.uk/apply-council-tax-reduction`
+  - Enforcement / liability order: `https://www.gov.uk/options-for-paying-off-your-debts/council-tax-arrears`
+  Map source URLs to guidance cards by label keyword matching — use whichever
+  GOV.UK URL is most relevant to each card's content.
+- For `acme_operations` cards: set `source_url` to a fictional internal reference
+  in the format `https://intranet.acme.gov.uk/revenues/guidance/[slug]`
+  where slug is derived from the card label (lowercase, hyphens). These URLs
+  are illustrative — they do not need to resolve. They demonstrate the pattern.
+- In the guidance card component (wherever guidance cards are rendered in
+  `LiveGuidancePage` or a child component), if `source_url` is present, render:
+  `<a href={sourceUrl} target="_blank" rel="noopener noreferrer"
+   className="text-sm text-govuk-blue underline mt-2 block">
+   View source guidance →</a>`
+- If `source_url` is null or missing, render nothing. No broken links.
+
+**Addition 4 — Ocelot positioning section in AdminPage**
+
+Add a new section to `AdminPage.tsx` titled "How this relates to Ocelot-style guidance".
+
+The section content (render as prose paragraphs, not bullet points):
+
+> Ocelot is HMRC's interactive guidance delivery platform — the system behind
+> CEST and other task-based guidance tools used across central government. It
+> embodies a UX philosophy: one question at a time, explicit stage outcomes,
+> reviewable answers at each checkpoint, and transparent links to underlying policy.
+>
+> CTCallCoach applies this same philosophy to a contact centre context. The
+> guided question sequence surfaces one question at a time during a live call.
+> Stage checkpoint cards summarise what has been established before advancing.
+> The answers panel lets the advisor review the full call record without leaving
+> the screen. Guidance cards link directly to the GOV.UK manual pages and internal
+> operating guidance that underpin each recommendation.
+>
+> The key difference from Ocelot is the operational layer: CTCallCoach serves a
+> call advisor navigating a live resident interaction, not a self-service user
+> completing a tax check. The pacing, language, and layout are tuned for speed
+> under call pressure rather than deliberate self-directed navigation. The
+> underlying philosophy — structured, transparent, auditable, policy-grounded —
+> is the same.
+
+Style this section with a left border in govuk-blue (matching the other
+information sections on the admin page). Add it between the "About this system"
+section and the footer of the page.
+
+### What to expect
+
+This is a medium-complexity prompt touching 3–4 existing files and creating
+3 new component files. No database migrations. No new API routes except
+potentially enriching the `/workflow/:sessionId/next` response with session
+responses if not already included.
+
+Time: 30–50 minutes in Cursor.
+
+Claude Code will:
+1. Create `StageCheckpointCard.tsx`
+2. Create `AnswersCapturedPanel.tsx`
+3. Update `LiveGuidancePage.tsx` to use both new components
+4. Update `@ctcc/shared-types` to add `source_url?: string | null` to the relevant type
+5. Update guidance card JSON in content-bundles to add source URLs
+6. Update the guidance card render component to show the source link
+7. Update `AdminPage.tsx` to add the Ocelot positioning section
+
+### How to verify it worked
+
+**Stage checkpoint card:**
+Run any scenario. Answer the last question in Stage 1 (the intake stage).
+Instead of immediately showing the first Stage 2 question, you should see a
+checkpoint card: "Stage complete: Initial Assessment" (or equivalent stage label),
+the classification established, and a "Continue →" button.
+Click "Continue →" — the first Stage 2 question should appear.
+
+**Answers panel:**
+On the live guidance screen, look at the right sidebar below the guidance cards.
+You should see "Answers so far (0)" collapsed. Answer one question. The count
+should update to "(1)". Click the header to expand — you should see the question
+text and your answer value. Answer more questions and verify they accumulate.
+
+**Source links:**
+When guidance cards appear in the sidebar after path classification, each card
+should have a small "View source guidance →" link at the bottom. Click a
+`public_policy` card link — it should open a real GOV.UK page in a new tab.
+Click an `acme_operations` card link — it should open the fictional intranet URL
+(will show a browser error, which is expected — this is illustrative).
+
+**Ocelot section on admin:**
+Navigate to /admin. Scroll to the bottom of the page (above any footer).
+You should see the "How this relates to Ocelot-style guidance" section with
+the govuk-blue left border and the three explanatory paragraphs.
+
+### What can go wrong
+
+**Stage checkpoint never appears:** The engine response may not include a
+`stage_advanced` flag. In that case, implement the detection by comparing
+`current_stage` before and after each `GET /workflow/:sessionId/next` call in
+component state. Do not change the engine — detect it at the UI layer.
+
+**Answers panel shows 0 even after answering:** The session responses may not
+be included in the next-question response. Check what the engine currently
+returns. If responses are absent, add `session_responses` to the response body
+in `apps/api/src/routes/workflow.ts` (the `GET /workflow/:sessionId/next`
+handler) by querying `QuestionResponse` records for the session. The data
+already exists in the DB — this is a read-only addition to the response.
+
+**Source URLs missing from guidance cards:** If the content-bundles JSON does
+not yet have `source_url` fields, Claude Code should add them directly to
+the JSON files in `packages/content-bundles/src/versions/v1/`. Do not invent
+new JSON structure — add `source_url` as a nullable field alongside existing
+fields on each support option or guidance item object.
+
+**TypeScript errors on new field:** If `source_url` is added to JSON but the
+shared type doesn't include it, run `pnpm build` from the repo root to catch
+all type errors at once, then fix the type in `@ctcc/shared-types`.
+
+### Critical thinking checkpoint
+
+After Prompt 3B, ask yourself:
+
+- When a stage completes, does the advisor get a moment to register what has
+  been established before the next question arrives? (The checkpoint card.)
+- Can the advisor glance at everything captured so far without losing their
+  place in the call? (The answers panel.)
+- If a guidance card recommends a payment plan, can the advisor verify that
+  recommendation against the actual GOV.UK page with one click? (Source links.)
+- If a GovTech investor looks at the admin page, can they immediately understand
+  how this tool relates to existing HMRC digital guidance patterns? (Ocelot section.)
+
+If yes to all four — CTCallCoach now operates at the same conceptual level as
+production-grade UK government guidance tooling. That is a strong claim to make
+in a demo context and it is now accurate.
+
+### The Cursor prompt to paste
+
+Copy and paste the following into your Cursor Claude Code session:
+
+---
+
+```
+Read docs/ thoroughly before starting. Read apps/web/src/features/live-guidance/LiveGuidancePage.tsx, apps/web/src/features/admin/AdminPage.tsx (if it exists), apps/api/src/routes/workflow.ts, and packages/shared-types/src/index.ts (or equivalent types file). Then implement the following four additions. Make no changes to the workflow engine, session service, or database schema.
+
+ADDITION 1 — Stage completion checkpoint card
+
+Create apps/web/src/components/StageCheckpointCard.tsx. It accepts:
+  - stageLabel: string (the stage just completed)
+  - primaryPath: string | null (current classification)
+  - overlayPaths: string[] (overlay classifications, may be empty)
+  - questionsAnswered: number (count of responses in this stage)
+  - onContinue: () => void
+
+Render a full-width card with a 4px govuk-blue left border, white background, padding 24px.
+Heading: "Stage complete: {stageLabel}" in govuk-black, font-weight 600.
+Below: classification line — green badge for primaryPath (if set, else "Classifying..."), 
+grey badges for each overlayPath.
+Below: small grey text "{questionsAnswered} question{s} answered in this stage."
+Below: a govuk-blue "Continue to next stage →" button that calls onContinue().
+
+In LiveGuidancePage.tsx:
+- Add state: stageJustCompleted: boolean = false, completedStageLabel: string = '', prevStage: string = ''
+- After each successful GET /workflow/:sessionId/next response, compare response.workflow_state.current_stage (or equivalent field) to prevStage. If they differ AND prevStage is not empty, set stageJustCompleted = true, completedStageLabel = prevStage. Update prevStage to the new stage value.
+- In the render: if stageJustCompleted is true, render <StageCheckpointCard /> instead of <QuestionCard />. Pass questionsAnswered as the count of sessionResponses belonging to the completedStageLabel stage. onContinue sets stageJustCompleted = false.
+- If the next-question response does not include a current_stage field, check the engine response shape and use whatever field indicates the current workflow stage.
+
+ADDITION 2 — Answers captured panel
+
+Create apps/web/src/components/AnswersCapturedPanel.tsx. It accepts:
+  - responses: Array<{ stage: string; questionText: string; answerValue: string }>
+  - isOpen: boolean
+  - onToggle: () => void
+
+Render a collapsible panel. Header row: "Answers so far ({responses.length})" with a ▼/▲ chevron on the right. Header background govuk-light-grey (#f3f2f1), padding 12px 16px, cursor pointer, onClick calls onToggle.
+When open: group responses by stage. For each stage, render a small grey label row (stage name, uppercase, font-size 11px, letter-spacing). For each response in that stage, render a two-column row: left = questionText truncated at 75 chars (add "..." if truncated), right = answerValue in a grey monospace pill. Row border-bottom 1px solid #e8e8e8.
+If responses is empty: show "No answers recorded yet." in grey italic, 14px.
+
+In LiveGuidancePage.tsx:
+- Add state: answersOpen: boolean = false
+- Check whether the GET /workflow/:sessionId/next response already includes session responses. Look for a field like session_responses or responses in the response body.
+  - If it does: map it to the format { stage, questionText, answerValue } and store in state.
+  - If it does not: update apps/api/src/routes/workflow.ts in the GET /workflow/:sessionId/next handler to include session responses. Query: prisma.questionResponse.findMany({ where: { call_session_id: sessionId }, include: { question_step_definition: true }, orderBy: { created_at: 'asc' } }) and append as session_responses to the response. This is read-only and safe.
+- Add <AnswersCapturedPanel /> to the right sidebar of LiveGuidancePage, below the guidance cards section. Pass responses, isOpen=answersOpen, onToggle={() => setAnswersOpen(!answersOpen)}.
+
+ADDITION 3 — Guidance card source links
+
+In packages/shared-types/src/index.ts (or wherever SupportOption or GuidanceItem is defined), add source_url?: string | null to the relevant type.
+
+In packages/content-bundles/src/versions/v1/ (find the support options or guidance catalog JSON file), add "source_url" to each item:
+- For source_domain: "public_policy" items, use real GOV.UK URLs. Match by label keyword:
+  - Council tax payment / due / bill → "https://www.gov.uk/council-tax/pay-your-council-tax"
+  - Council Tax Reduction / CTR / hardship / discount → "https://www.gov.uk/apply-council-tax-reduction"
+  - Debt / arrears / enforcement / liability order → "https://www.gov.uk/options-for-paying-off-your-debts/council-tax-arrears"
+  - General council tax → "https://www.gov.uk/council-tax"
+  - Payment plan / arrangement → "https://www.gov.uk/council-tax/pay-your-council-tax"
+  - Benefits / Universal Credit → "https://www.gov.uk/universal-credit"
+  Use your best judgement to match each card to the most relevant GOV.UK URL.
+- For source_domain: "acme_operations" items, set source_url to "https://intranet.acme.gov.uk/revenues/guidance/[slug]" where slug is the item label lowercased with spaces replaced by hyphens and special chars removed.
+
+In the guidance card render location in LiveGuidancePage (or its child component), after the existing card description text, add:
+  {item.source_url && (
+    <a href={item.source_url} target="_blank" rel="noopener noreferrer"
+       className="text-sm text-govuk-blue underline mt-2 block hover:text-govuk-blue/80">
+      View source guidance →
+    </a>
+  )}
+
+ADDITION 4 — Ocelot positioning section in AdminPage
+
+In apps/web/src/features/admin/AdminPage.tsx (or wherever the admin page lives), add a new section after the existing "About this system" section and before any footer.
+
+Section heading: "How this relates to Ocelot-style guidance" — same heading style as other admin sections.
+
+Add a div with className "border-l-4 border-govuk-blue pl-6 space-y-4 text-govuk-body" containing three <p> tags:
+
+Paragraph 1: "Ocelot is HMRC's interactive guidance delivery platform — the system behind CEST (Check Employment Status for Tax) and other task-based tools used across central government. It embodies a UX philosophy: one question at a time, explicit stage outcomes, reviewable answers at each checkpoint, and transparent links to the underlying policy that drives each recommendation."
+
+Paragraph 2: "CTCallCoach applies the same philosophy to a contact centre context. The guided question sequence surfaces one decision at a time during a live call. Stage checkpoint cards summarise what has been established before the workflow advances. The answers panel lets the advisor review the full call record in one glance without leaving the screen. Guidance cards link directly to the GOV.UK manual pages and fictional internal operating guidance that underpin each recommendation."
+
+Paragraph 3: "The key difference from Ocelot is the operational layer. CTCallCoach serves a call advisor navigating a live resident interaction under time pressure, not a self-service user completing a tax status check at their own pace. The pacing, language, and layout are tuned for speed and confidence under call conditions. The underlying philosophy — structured, transparent, auditable, policy-grounded — is the same."
+
+After all four additions, run: cd apps/web && pnpm build
+Fix any TypeScript errors before finishing. Do not change any workflow engine files, session service files, or database schema files.
+```
+
+---
+
+### Communicating this to your audiences
+
+**To call advisors:** "We have added a progress checkpoint between call stages —
+you will see a summary of what has been established before each new phase begins.
+You can also see all your answers in a panel on the right, and each guidance
+recommendation now links to the actual GOV.UK page it comes from."
+
+**To council leaders and civil service:** "The tool now applies the same
+interactive guidance philosophy used by HMRC in CEST and other central
+government task-based tools. Explicit stage checkpoints, auditable answer
+records, and policy-source transparency are standard features of this
+class of guidance tooling."
+
+**To GovTech investors:** "The guidance UX is now architecturally aligned with
+Ocelot-pattern design — the approach used by HMRC for scalable, policy-transparent,
+task-based digital guidance. The admin page explains this positioning directly."
 
 ---
 

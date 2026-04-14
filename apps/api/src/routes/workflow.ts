@@ -125,16 +125,22 @@ export async function workflowRoute(app: FastifyInstance): Promise<void> {
   // ── GET /workflow/:sessionId/next ───────────────────────────────────────────
   // Lightweight "what comes next?" endpoint. Evaluates the workflow and returns
   // the next required question, current paths, and classification state.
+  // Also returns session_responses (read-only) so the UI can render the answers panel.
   app.get<{ Params: { sessionId: string } }>(
     '/workflow/:sessionId/next',
     async (req, _reply) => {
       const { sessionId } = req.params;
 
-      const [workflow, session] = await Promise.all([
+      const [workflow, session, sessionResponses] = await Promise.all([
         evaluateWorkflow(sessionId),
         db.callSession.findUniqueOrThrow({
           where: { id: sessionId },
           select: { stage: true },
+        }),
+        db.questionResponse.findMany({
+          where: { call_session_id: sessionId },
+          include: { question_step_definition: true },
+          orderBy: { created_at: 'asc' },
         }),
       ]);
 
@@ -149,6 +155,24 @@ export async function workflowRoute(app: FastifyInstance): Promise<void> {
         escalation_flags: workflow.escalationFlags,
         warnings: workflow.warnings,
         allowed_outcomes: workflow.allowedOutcomes,
+        session_responses: sessionResponses.map((qr) => ({
+          stage: qr.question_step_definition.stage as string,
+          questionCode: qr.question_step_definition.code,
+          questionText: qr.question_step_definition.question_text,
+          questionType: qr.question_step_definition.question_type as string,
+          answerOptions:
+            (qr.question_step_definition.answer_options_json as string[] | null) ?? null,
+          answerValue:
+            qr.answer_text !== null && qr.answer_text !== undefined
+              ? qr.answer_text
+              : qr.answer_boolean !== null && qr.answer_boolean !== undefined
+              ? qr.answer_boolean
+                ? 'Yes'
+                : 'No'
+              : qr.answer_number !== null && qr.answer_number !== undefined
+              ? String(qr.answer_number)
+              : qr.response_status,
+        })),
       };
     },
   );

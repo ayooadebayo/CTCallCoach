@@ -9,6 +9,15 @@ interface QuestionCardProps {
   submitting?: boolean;
   /** AI-generated rationale — shown in the "why it matters" box when available */
   aiRationale?: QuestionRationaleResponse | null;
+  /**
+   * Pre-fill values for edit mode (when reviewing a historical answer).
+   * Pass a new `key` prop alongside this to force remount when the question changes.
+   */
+  initialValue?: {
+    text?: string;
+    selectedOption?: string;
+    number?: number;
+  };
 }
 
 const inputClass =
@@ -17,10 +26,12 @@ const inputClass =
 const btnPrimary =
   'rounded-[2px] bg-govuk-green px-5 py-2 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow';
 
-export function QuestionCard({ question, onSubmit, submitting = false, aiRationale }: QuestionCardProps) {
-  const [textValue, setTextValue] = useState('');
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [numberValue, setNumberValue] = useState('');
+export function QuestionCard({ question, onSubmit, submitting = false, aiRationale, initialValue }: QuestionCardProps) {
+  const [textValue, setTextValue] = useState(initialValue?.text ?? '');
+  const [selectedOption, setSelectedOption] = useState<string | null>(initialValue?.selectedOption ?? null);
+  const [numberValue, setNumberValue] = useState(
+    initialValue?.number != null ? String(initialValue.number) : '',
+  );
 
   function handleSubmit() {
     if (question.question_type === 'boolean') return;

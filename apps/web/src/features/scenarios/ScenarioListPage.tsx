@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { listScenarios, listAgents, createSession } from '../../lib/api';
 import type { ScenarioSummary, AgentSummary } from '../../lib/api';
 import { PATH_LABELS } from '../../lib/labels';
@@ -75,19 +75,27 @@ export function ScenarioListPage() {
   }
 
   const agentSelector = (
-    <div className="flex items-center gap-2">
-      <label className="text-blue-100 text-sm font-medium whitespace-nowrap">Agent:</label>
-      <select
-        value={selectedAgentId}
-        onChange={(e) => handleAgentChange(e.target.value)}
-        className="rounded-sm border-0 bg-white px-3 py-1.5 text-sm text-govuk-black focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
+    <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-2">
+        <label className="text-blue-100 text-sm font-medium whitespace-nowrap">Agent:</label>
+        <select
+          value={selectedAgentId}
+          onChange={(e) => handleAgentChange(e.target.value)}
+          className="rounded-sm border-0 bg-white px-3 py-1.5 text-sm text-govuk-black focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
+        >
+          {agents.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.display_name} ({a.team})
+            </option>
+          ))}
+        </select>
+      </div>
+      <Link
+        to="/admin"
+        className="text-sm text-blue-200 hover:text-white font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
       >
-        {agents.map((a) => (
-          <option key={a.id} value={a.id}>
-            {a.display_name} ({a.team})
-          </option>
-        ))}
-      </select>
+        Admin →
+      </Link>
     </div>
   );
 

@@ -259,6 +259,7 @@ export interface GuidanceCard {
   do_not_say_text?: string;
   warning_text?: string;
   tags?: string[];
+  source_url?: string | null;
 }
 
 export interface SupportOption {
