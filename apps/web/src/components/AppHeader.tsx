@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 interface AppHeaderProps {
   pageTitle?: string;
   right?: React.ReactNode;
@@ -12,13 +14,13 @@ export function AppHeader({ pageTitle, right }: AppHeaderProps) {
   return (
     <header className="bg-govuk-blue">
       <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-4 min-h-[56px]">
-        {/* Branding */}
-        <div className="flex-shrink-0">
+        {/* Branding — links to landing page */}
+        <Link to="/" className="flex-shrink-0 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-govuk-yellow rounded-sm">
           <p className="text-white font-bold text-sm leading-tight">🏛 Acme City Council</p>
           <p className="text-blue-200 text-xs mt-0.5 leading-tight">
             Council Tax Payment Difficulty — Call Coach
           </p>
-        </div>
+        </Link>
 
         {/* Centre: page title */}
         {pageTitle ? (

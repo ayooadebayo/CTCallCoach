@@ -2,6 +2,7 @@
 // Source: packages/content-bundles/src/versions/v1/support-options/catalog.json
 // Upserts by code — idempotent.
 
+import { Prisma } from '@prisma/client';
 import { db } from '../client.js';
 import { loadV1ContentBundle } from '@ctcc/content-bundles';
 
@@ -9,6 +10,12 @@ export async function seedSupportOptions(): Promise<void> {
   const { supportOptions } = loadV1ContentBundle();
 
   for (const so of supportOptions) {
+    // Prisma Json? fields require Prisma.JsonNull (not JS null/undefined) when absent.
+    const triggerJson: Prisma.NullableJsonNullValueInput | Prisma.InputJsonValue =
+      so.trigger_conditions !== undefined
+        ? (so.trigger_conditions as unknown as Prisma.InputJsonValue)
+        : Prisma.JsonNull;
+
     await db.supportOption.upsert({
       where: { code: so.code },
       update: {
@@ -18,7 +25,7 @@ export async function seedSupportOptions(): Promise<void> {
         internal_handling_note: so.internal_handling_note,
         requires_specialist_follow_up: so.requires_specialist_follow_up,
         source_domain: so.source_domain ?? null,
-        trigger_conditions_json: so.trigger_conditions ?? null,
+        trigger_conditions_json: triggerJson,
         status: 'active',
       },
       create: {
@@ -29,7 +36,7 @@ export async function seedSupportOptions(): Promise<void> {
         internal_handling_note: so.internal_handling_note,
         requires_specialist_follow_up: so.requires_specialist_follow_up,
         source_domain: so.source_domain ?? null,
-        trigger_conditions_json: so.trigger_conditions ?? null,
+        trigger_conditions_json: triggerJson,
         status: 'active',
       },
     });

@@ -109,7 +109,7 @@ export function AdminPage() {
         pageTitle="Admin / Demo Transparency"
         right={
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/app')}
             className="text-sm text-blue-200 hover:text-white font-medium focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
           >
             ← Scenarios

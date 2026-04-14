@@ -1,9 +1,9 @@
-// Typed API client — all requests go through /api which Vite proxies to localhost:3001.
+// Typed API client — in production uses VITE_API_URL; locally falls back to http://localhost:3001.
 // No business logic here; just HTTP I/O with typed inputs/outputs.
 
 import type { WorkflowEngineOutput } from '@ctcc/shared-types';
 
-const BASE = '/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 async function request<T>(
   method: string,
@@ -14,7 +14,7 @@ async function request<T>(
     body !== undefined
       ? { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
       : { method };
-  const res = await fetch(`${BASE}${path}`, init);
+  const res = await fetch(`${API_BASE_URL}${path}`, init);
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`${method} ${path} → ${res.status}: ${text}`);

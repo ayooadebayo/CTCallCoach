@@ -7,7 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import type { ZodType } from 'zod';
+import { z } from 'zod';
 import {
   EnquiryTypeConfigSchema,
   QuestionStepConfigSchema,
@@ -29,7 +29,7 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 // Go up two levels from {src|dist}/loaders/ to reach package root, then into src/versions/v1/
 const V1_DIR = join(_dir, '../../src/versions/v1');
 
-function loadAndValidate<T>(filename: string, schema: ZodType<T>): T {
+function loadAndValidate<S extends z.ZodTypeAny>(filename: string, schema: S): z.output<S> {
   const raw: unknown = JSON.parse(readFileSync(join(V1_DIR, filename), 'utf-8'));
   const result = schema.safeParse(raw);
   if (!result.success) {
@@ -37,7 +37,8 @@ function loadAndValidate<T>(filename: string, schema: ZodType<T>): T {
       `Workflow config validation failed for ${filename}:\n${result.error.toString()}`,
     );
   }
-  return result.data;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return result.data as z.output<S>;
 }
 
 export interface V1WorkflowConfig {
@@ -60,7 +61,7 @@ let _cache: V1WorkflowConfig | null = null;
 export function loadV1WorkflowConfig(force = false): V1WorkflowConfig {
   if (_cache !== null && !force) return _cache;
 
-  _cache = {
+  const config: V1WorkflowConfig = {
     enquiryTypes: loadAndValidate('enquiry-types.json', EnquiryTypeConfigSchema.array()),
     questionSteps: loadAndValidate('question-steps.json', QuestionStepConfigSchema.array()),
     classificationRules: loadAndValidate(
@@ -75,6 +76,6 @@ export function loadV1WorkflowConfig(force = false): V1WorkflowConfig {
     ),
     outcomeRules: loadAndValidate('outcome-rules.json', OutcomeRuleSchema.array()),
   };
-
-  return _cache;
+  _cache = config;
+  return config;
 }

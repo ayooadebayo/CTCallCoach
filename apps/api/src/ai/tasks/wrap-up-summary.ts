@@ -28,7 +28,7 @@ export async function generateWrapUpSummary(sessionId: string): Promise<WrapUpRe
         },
       },
       escalation_flags: {
-        select: { code: true, severity: true, reason: true },
+        select: { code: true, severity: true, reason_text: true },
       },
       call_outcome: {
         select: { primary_outcome_code: true, owner_next_step: true },
@@ -92,7 +92,7 @@ export async function generateWrapUpSummary(sessionId: string): Promise<WrapUpRe
     .join('\n');
 
   const escalationLines = escalations
-    .map((e) => `${e.code} (${e.severity}): ${e.reason}`)
+    .map((e) => `${e.code} (${e.severity}): ${e.reason_text}`)
     .join('; ');
 
   const context = [

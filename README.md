@@ -133,6 +133,24 @@ The AI layer is optional and modular. The workflow engine runs without it. AI jo
 
 ---
 
+## Deployment
+
+**Frontend → Vercel (free tier)**
+1. Connect the repo to Vercel. Set Root Directory: `apps/web`. Framework: Vite.
+2. Add environment variable: `VITE_API_URL` = your Railway API URL.
+3. Add custom domain: `cc.vantforge.com`.
+
+**API → Railway (free tier)**
+1. Connect the repo to Railway. Use Dockerfile: `apps/api/Dockerfile`.
+2. Add PostgreSQL plugin (auto-generates `DATABASE_URL`).
+3. Add environment variables: `OPENAI_API_KEY`, `CORS_ALLOWED_ORIGINS`, `NODE_ENV=production`.
+4. After first deploy, open Railway shell and run: `pnpm db:migrate && pnpm db:seed`
+
+**DNS → Cloudflare**
+1. Add CNAME record: name `cc`, target `cname.vercel-dns.com`, proxied.
+
+---
+
 ## Status
 
 MVP build in progress — Phase 0 (repo foundation) complete.

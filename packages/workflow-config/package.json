@@ -17,7 +17,8 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
-    "@ctcc/shared-schemas": "workspace:*"
+    "@ctcc/shared-schemas": "workspace:*",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.5.1",

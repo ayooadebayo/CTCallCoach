@@ -1,0 +1,41 @@
+// Workflow config v1 loader
+// Reads JSON rule files from src/versions/v1/, validates with Zod schemas, and returns typed config.
+//
+// This path resolution works from both src/loaders/ (source) and dist/loaders/ (compiled),
+// because the JSON files always live in src/versions/v1/ relative to the package root.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { join, dirname } from 'node:path';
+import { EnquiryTypeConfigSchema, QuestionStepConfigSchema, ClassificationRuleSchema, PathRuleSchema, SupportTriggerRuleSchema, EscalationTriggerRuleSchema, OutcomeRuleSchema, } from '@ctcc/shared-schemas';
+const _dir = dirname(fileURLToPath(import.meta.url));
+// Go up two levels from {src|dist}/loaders/ to reach package root, then into src/versions/v1/
+const V1_DIR = join(_dir, '../../src/versions/v1');
+function loadAndValidate(filename, schema) {
+    const raw = JSON.parse(readFileSync(join(V1_DIR, filename), 'utf-8'));
+    const result = schema.safeParse(raw);
+    if (!result.success) {
+        throw new Error(`Workflow config validation failed for ${filename}:\n${result.error.toString()}`);
+    }
+    return result.data;
+}
+let _cache = null;
+/**
+ * Load and validate the v1 workflow config from JSON files.
+ * Results are cached after the first call; pass force=true to reload.
+ * Throws if any file fails Zod validation.
+ */
+export function loadV1WorkflowConfig(force = false) {
+    if (_cache !== null && !force)
+        return _cache;
+    _cache = {
+        enquiryTypes: loadAndValidate('enquiry-types.json', EnquiryTypeConfigSchema.array()),
+        questionSteps: loadAndValidate('question-steps.json', QuestionStepConfigSchema.array()),
+        classificationRules: loadAndValidate('classification-rules.json', ClassificationRuleSchema.array()),
+        pathRules: loadAndValidate('path-rules.json', PathRuleSchema.array()),
+        supportRules: loadAndValidate('support-rules.json', SupportTriggerRuleSchema.array()),
+        escalationRules: loadAndValidate('escalation-rules.json', EscalationTriggerRuleSchema.array()),
+        outcomeRules: loadAndValidate('outcome-rules.json', OutcomeRuleSchema.array()),
+    };
+    return _cache;
+}
+//# sourceMappingURL=v1.js.map

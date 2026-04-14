@@ -6,7 +6,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import type { ZodType } from 'zod';
+import { z } from 'zod';
 import {
   GuidanceCardContentSchema,
   SupportOptionContentSchema,
@@ -22,7 +22,7 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 // Goes up two levels from {src|dist}/loaders/ to package root, then into src/versions/v1/
 const V1_DIR = join(_dir, '../../src/versions/v1');
 
-function loadAndValidate<T>(relPath: string, schema: ZodType<T>): T {
+function loadAndValidate<S extends z.ZodTypeAny>(relPath: string, schema: S): z.output<S> {
   const raw: unknown = JSON.parse(readFileSync(join(V1_DIR, relPath), 'utf-8'));
   const result = schema.safeParse(raw);
   if (!result.success) {
@@ -30,7 +30,8 @@ function loadAndValidate<T>(relPath: string, schema: ZodType<T>): T {
       `Content bundle validation failed for ${relPath}:\n${result.error.toString()}`,
     );
   }
-  return result.data;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return result.data as z.output<S>;
 }
 
 export interface V1ContentBundle {
@@ -52,7 +53,7 @@ let _cache: V1ContentBundle | null = null;
 export function loadV1ContentBundle(force = false): V1ContentBundle {
   if (_cache !== null && !force) return _cache;
 
-  _cache = {
+  const bundle: V1ContentBundle = {
     publicPolicyGuidanceCards: loadAndValidate(
       'public-policy/guidance-cards.json',
       GuidanceCardContentSchema.array(),
@@ -71,6 +72,6 @@ export function loadV1ContentBundle(force = false): V1ContentBundle {
     ),
     warnings: loadAndValidate('warnings/catalog.json', WarningContentSchema.array()),
   };
-
-  return _cache;
+  _cache = bundle;
+  return bundle;
 }

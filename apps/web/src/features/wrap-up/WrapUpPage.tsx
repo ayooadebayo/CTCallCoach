@@ -38,7 +38,7 @@ export function WrapUpPage() {
   // Coaching feedback (loaded on done screen)
   const [coaching, setCoaching] = useState<CoachingFeedbackResponse | null>(null);
   const [coachingLoading, setCoachingLoading] = useState(false);
-  const [coachingExpanded, setCoachingExpanded] = useState(false);
+  const [coachingExpanded, setCoachingExpanded] = useState(true);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -124,7 +124,7 @@ export function WrapUpPage() {
               Outcome recorded. Case note saved. Session closed.
             </p>
             <button
-              onClick={() => navigate('/', { replace: true })}
+              onClick={() => navigate('/app', { replace: true })}
               className="rounded-[2px] bg-govuk-green px-6 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
             >
               Back to scenarios

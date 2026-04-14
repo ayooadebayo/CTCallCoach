@@ -27,7 +27,7 @@ export async function generateCoachingFeedback(
         },
       },
       escalation_flags: {
-        select: { code: true, severity: true, reason: true },
+        select: { code: true, severity: true, reason_text: true },
       },
       call_outcome: {
         select: { primary_outcome_code: true, owner_next_step: true },

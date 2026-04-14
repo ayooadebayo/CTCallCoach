@@ -6,10 +6,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@ctcc/shared-types": ["../../packages/shared-types/src/index.ts"],
-      "@ctcc/shared-schemas": ["../../packages/shared-schemas/src/index.ts"],
-      "@ctcc/workflow-config": ["../../packages/workflow-config/src/index.ts"],
-      "@ctcc/content-bundles": ["../../packages/content-bundles/src/index.ts"]
+      "@ctcc/shared-types": ["../../packages/shared-types/dist/index.d.ts"],
+      "@ctcc/shared-schemas": ["../../packages/shared-schemas/dist/index.d.ts"],
+      "@ctcc/workflow-config": ["../../packages/workflow-config/dist/index.d.ts"],
+      "@ctcc/content-bundles": ["../../packages/content-bundles/dist/index.d.ts"]
     }
   },
   "include": ["src"],

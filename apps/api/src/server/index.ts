@@ -14,8 +14,13 @@ import { adminRoute } from '../routes/admin.js';
 
 const server = Fastify({ logger: true });
 
+const allowedOrigins = process.env['CORS_ALLOWED_ORIGINS']
+  ? process.env['CORS_ALLOWED_ORIGINS'].split(',').map(s => s.trim())
+  : ['http://localhost:5173'];
+
 await server.register(cors, {
-  origin: process.env['NODE_ENV'] === 'production' ? false : 'http://localhost:5173',
+  origin: allowedOrigins,
+  credentials: true,
 });
 
 // Health check
