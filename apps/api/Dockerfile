@@ -34,4 +34,5 @@ RUN pnpm --filter @ctcc/content-bundles build
 RUN pnpm --filter api build
 
 EXPOSE 3001
-CMD ["node", "apps/api/dist/server/index.js"]
+WORKDIR /app/apps/api
+CMD sh -c "pnpm exec prisma migrate deploy && pnpm exec tsx src/db/seeds/index.ts && node /app/apps/api/dist/server/index.js"
