@@ -125,7 +125,7 @@ export function AdminPage() {
               System Transparency View
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
-              Read-only. Shows the internal logic of CTCallCoach — for technical and investor audiences.
+              Read-only. Shows the internal logic of CTCallCoach for technical and regulatory audiences.
             </p>
           </div>
           <span className="text-xs rounded-full border border-govuk-green bg-green-50 text-govuk-green font-bold px-3 py-1">

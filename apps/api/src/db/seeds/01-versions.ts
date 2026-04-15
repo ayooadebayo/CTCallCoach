@@ -48,7 +48,7 @@ export async function seedVersions(): Promise<SeededVersions> {
     create: {
       version_label: 'v1',
       status: 'active',
-      description: 'Placeholder prompt version — AI layer not yet active (Step 7)',
+      description: 'Placeholder prompt version — AI layer is partially active',
       change_summary: 'Placeholder. No prompt tasks wired yet.',
       published_at: publishedAt,
     },

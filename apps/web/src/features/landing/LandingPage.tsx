@@ -36,7 +36,7 @@ function Navbar() {
           to="/app"
           className="bg-govuk-blue text-white text-sm font-medium px-4 py-2 rounded-[2px] hover:bg-govuk-blue-dark focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
         >
-          Launch Demo
+          Launch demo
         </Link>
       </div>
     </nav>
@@ -49,10 +49,13 @@ function Hero() {
   return (
     <section className="w-full bg-govuk-blue py-16 px-4 text-center sm:px-6 sm:py-20">
       <h1 className="mx-auto max-w-[720px] text-3xl font-bold leading-tight text-white sm:text-5xl">
-        Guided call coaching for council tax advisors
+        Guided call coaching 
+        <br />
+        for council tax advisors
       </h1>
       <p className="mx-auto mt-5 max-w-[600px] text-base text-white opacity-90 sm:text-xl">
-        Rules-led. AI-assisted. Built for the pressure of a live resident call.
+        Rules-led. Guidance-based. AI-assisted.<br />
+        Built for the pressure of a live resident call.
       </p>
       <div className="flex items-center justify-center flex-wrap gap-4 mt-10">
         <Link
@@ -60,7 +63,7 @@ function Hero() {
           className="bg-white text-govuk-blue font-bold px-8 py-3.5 rounded-[2px] hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
           style={{ fontSize: 16 }}
         >
-          Launch Demo →
+          Launch demo →
         </Link>
         <Link
           to="/admin"
@@ -71,7 +74,9 @@ function Hero() {
         </Link>
       </div>
       <p className="text-white mt-4 text-sm" style={{ opacity: 0.7 }}>
-        No login required · Free to use · Built for Acme City Council (demo)
+        No login required · Free to use · Built for demonstration
+        <br />
+        Built for Acme City Council (a fictional local authority)
       </p>
     </section>
   );
@@ -89,17 +94,17 @@ const PROBLEM_CARDS: ProblemCard[] = [
   {
     borderColor: '#f47738',
     heading: 'Inconsistent advice',
-    body: 'Without a structured guide, different agents handle the same situation differently — leading to resident confusion and compliance risk.',
+    body: 'Without a structured guide, different agents handle the same situation differently, leading to resident confusion and compliance risk.',
   },
   {
     borderColor: '#d4351c',
     heading: 'Slow call handling',
-    body: 'Advisors pause to check manuals, ask colleagues, or escalate unnecessarily — adding time and cost to every interaction.',
+    body: 'Advisors pause to check manuals, ask colleagues, or escalate unnecessarily, adding time and cost to every interaction.',
   },
   {
     borderColor: '#1d70b8',
     heading: 'No in-call learning',
-    body: 'Traditional training happens before the task. By the time the call arrives, the learning has faded. There is no guide available during the call itself.',
+    body: 'Traditional training happens before the task. By the time the call arrives, the learning has faded. Learning on the call is challenging.',
   },
 ];
 
@@ -108,11 +113,11 @@ function Problem() {
     <section className="w-full bg-white py-18 px-6" style={{ paddingTop: 72, paddingBottom: 72 }}>
       <div className="max-w-[1100px] mx-auto">
         <SectionLabel>THE PROBLEM</SectionLabel>
-        <SectionHeading>Contact centre advisors carry too much in their heads</SectionHeading>
+        <SectionHeading>Contact centre advisors carry a lot in their heads</SectionHeading>
         <p className="text-gray-700 mb-12" style={{ fontSize: 18, maxWidth: 680 }}>
           Council tax calls involve complex rules, multiple support options, and residents in
-          financial difficulty — all at once, under time pressure. Advisors shouldn't have to
-          memorise the policy manual.
+          financial difficulty, all at once, under time pressure. Advisors shouldn't have to
+          cram the policy manual and navigation steps.
         </p>
         <div className="flex gap-6 flex-wrap">
           {PROBLEM_CARDS.map((card) => (
@@ -143,22 +148,22 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     n: 1,
     heading: 'Start the call',
-    body: 'Select the scenario type and agent. The system loads the relevant workflow rules for this call type.',
+    body: 'Select the scenario type and agent. The system loads the relevant workflow rules for the chosen call type and follow the official guidance.',
   },
   {
     n: 2,
     heading: 'Answer guided questions',
-    body: 'One question at a time. The workflow engine determines the path — no AI involved in routing decisions.',
+    body: 'One structured question at a time. The workflow engine determines the likely path based on official guidance, there is no AI involved in routing decisions.',
   },
   {
     n: 3,
     heading: 'Receive real-time guidance',
-    body: 'As the path becomes clear, relevant policy guidance and support options appear alongside the call.',
+    body: 'As the path becomes clear, relevant policy guidance and support options appear alongside the call, to aid learning in the flow of work when it matters most.',
   },
   {
     n: 4,
     heading: 'Wrap up with confidence',
-    body: 'AI drafts the case note. Coaching feedback appears after the call. The advisor learns from every interaction.',
+    body: 'AI drafts the case note for the advisor to review and edit. Coaching feedback appears after the call. The advisor learns from every interaction they have.',
   },
 ];
 
@@ -203,15 +208,15 @@ const CAPABILITY_CARDS: CapabilityCard[] = [
   },
   {
     heading: 'Policy and operations separated',
-    body: 'GOV.UK statutory guidance and Acme City Council operating guidance are kept in separate content bundles — clearly labelled on every guidance card.',
+    body: 'GOV.UK statutory guidance and Acme City Council operating guidance are kept in separate content bundles, clearly labelled on every guidance card to provide context.',
   },
   {
     heading: 'AI that explains and coaches',
-    body: 'OpenAI explains why each question matters, drafts the case note from call data, and delivers specific after-call coaching. It supports — never decides.',
+    body: 'AI explains why each question matters, drafts the case note from call data, and delivers specific after-call coaching. It supports but never decides. The advisor is required to decide.',
   },
   {
     heading: 'Learning in the flow of work',
-    body: 'Guidance appears at the moment of need, not in a training room three months earlier. Advisors build expertise through every real and simulated call.',
+    body: 'Guidance appears at the moment of need, not in a training room three months earlier. Advisors build expertise through every real and simulated call. They also improve with each coaching feedback.',
   },
 ];
 
@@ -220,7 +225,7 @@ function Capabilities() {
     <section className="w-full bg-white px-6" style={{ paddingTop: 72, paddingBottom: 72 }}>
       <div className="max-w-[1100px] mx-auto">
         <SectionLabel>WHAT MAKES IT DIFFERENT</SectionLabel>
-        <SectionHeading>Rules-led decisions. AI-assisted support. Always auditable.</SectionHeading>
+        <SectionHeading>Rules-led decisions with AI-assisted support. Always auditable.</SectionHeading>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {CAPABILITY_CARDS.map((card) => (
             <div
@@ -246,7 +251,7 @@ function SecondCta() {
       <h2 className="text-white font-bold text-3xl">See it in action</h2>
       <p className="text-white mx-auto mt-3 mb-10" style={{ fontSize: 18, opacity: 0.85, maxWidth: 560 }}>
         Run a simulated council tax arrears call and see the full guided workflow, AI assistance,
-        and transparency features.
+        and transparency features as the admin.
       </p>
       <div className="flex items-center justify-center flex-wrap gap-4">
         <Link
@@ -254,7 +259,7 @@ function SecondCta() {
           className="bg-white text-govuk-blue font-bold px-8 py-3.5 rounded-[2px] hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
           style={{ fontSize: 16 }}
         >
-          Launch Demo →
+          Launch demo →
         </Link>
         <Link
           to="/admin"
@@ -279,12 +284,12 @@ function Footer() {
           <p className="text-govuk-mid-grey text-sm leading-relaxed" style={{ maxWidth: 400 }}>
             A Learning in the Flow of Work (LITFOW) proof of concept.
             <br />
-            Built for Acme City Council — a fictional local authority used for demonstration.
+            Built for Acme City Council, a fictional local authority intended for demonstration.
           </p>
         </div>
         <div className="flex items-start gap-4 text-sm text-govuk-mid-grey">
           <Link to="/app" className="hover:text-white focus:outline-none focus:ring-2 focus:ring-govuk-yellow">
-            Launch Demo
+            Launch demo
           </Link>
           <span aria-hidden="true">·</span>
           <Link to="/admin" className="hover:text-white focus:outline-none focus:ring-2 focus:ring-govuk-yellow">
