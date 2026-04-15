@@ -74,9 +74,9 @@ function Hero() {
         </Link>
       </div>
       <p className="text-white mt-4 text-sm" style={{ opacity: 0.7 }}>
-        No login required · Free to use · Built for demonstration
+        No login required · Free to use · Built for demo
         <br />
-        Built for Acme City Council (a fictional local authority)
+        Built for Acme City Council (a fictional council)
       </p>
     </section>
   );
