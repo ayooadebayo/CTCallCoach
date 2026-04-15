@@ -113,7 +113,7 @@ export function WrapUpPage() {
     return (
       <div className="min-h-screen bg-govuk-light-grey">
         <AppHeader />
-        <div className="max-w-lg mx-auto px-6 py-12 space-y-6">
+        <div className="max-w-lg mx-auto px-4 py-12 space-y-6 sm:px-6">
           {/* Success panel */}
           <div className="rounded-sm border border-govuk-mid-grey bg-white p-8 shadow-sm text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-govuk-green flex items-center justify-center mx-auto">
@@ -214,7 +214,7 @@ export function WrapUpPage() {
       />
       {sessionId && <SessionNav sessionId={sessionId} current="wrap-up" />}
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
+      <main className="max-w-3xl mx-auto px-4 py-8 sm:px-6">
         {error && (
           <div className="mb-6 rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-4 py-3 text-sm text-govuk-black">
             <p className="font-bold text-govuk-red mb-1">Error</p>
@@ -227,14 +227,14 @@ export function WrapUpPage() {
           <div className="rounded-sm border border-govuk-mid-grey bg-white px-4 py-3 mb-6 shadow-sm text-sm">
             <div className="flex items-center gap-4 flex-wrap">
               <div>
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide mr-1">
+                <span className="text-gray-500 text-xs font-medium mr-1">
                   Caller
                 </span>
                 <span className="font-semibold text-govuk-black">{sessionData.residentLabel}</span>
               </div>
               {sessionData.primaryPath && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+                  <span className="text-gray-500 text-xs font-medium">
                     Classification:
                   </span>
                   <PathBadge code={sessionData.primaryPath} variant="primary" />
@@ -317,11 +317,11 @@ export function WrapUpPage() {
             />
           </div>
 
-          <div className="flex items-center gap-4 pt-2">
+          <div className="flex flex-col items-stretch gap-3 pt-2 sm:flex-row sm:items-center sm:gap-4">
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-[2px] bg-govuk-green px-6 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
+              className="w-full rounded-[2px] bg-govuk-green px-6 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow sm:w-auto"
             >
               {submitting ? 'Saving…' : 'Save & Close Call'}
             </button>

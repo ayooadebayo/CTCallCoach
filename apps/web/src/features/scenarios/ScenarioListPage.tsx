@@ -103,7 +103,7 @@ export function ScenarioListPage() {
     <div className="min-h-screen bg-govuk-light-grey">
       <AppHeader right={agentSelector} />
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
+      <main className="max-w-3xl mx-auto px-4 py-8 sm:px-6">
         {error && (
           <div className="mb-6 rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-4 py-3 text-sm text-govuk-black">
             <p className="font-bold text-govuk-red mb-1">Error</p>
@@ -124,7 +124,7 @@ export function ScenarioListPage() {
               key={s.id}
               className="rounded-sm border border-govuk-mid-grey bg-white p-5 shadow-sm"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1 min-w-0">
                   {/* Title + difficulty badge */}
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -163,7 +163,7 @@ export function ScenarioListPage() {
                 <button
                   onClick={() => handleStart(s.id)}
                   disabled={!selectedAgentId || starting === s.id}
-                  className="flex-shrink-0 rounded-[2px] bg-govuk-green px-5 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow whitespace-nowrap"
+                  className="w-full rounded-[2px] bg-govuk-green px-5 py-2.5 text-sm font-bold text-white hover:bg-govuk-green-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow whitespace-nowrap sm:w-auto sm:flex-shrink-0"
                 >
                   {starting === s.id ? 'Starting…' : 'Start Call →'}
                 </button>

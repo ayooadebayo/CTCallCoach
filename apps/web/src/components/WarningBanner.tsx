@@ -22,6 +22,8 @@ export function WarningBanner({ warnings = [], escalationFlags = [] }: WarningBa
   if (warnings.length === 0 && escalationFlags.length === 0) return null;
 
   const baseCard = 'rounded-sm border border-govuk-mid-grey px-4 py-3 text-sm';
+  const formatSeverity = (severity: string) =>
+    severity.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 
   return (
     <div className="space-y-2">
@@ -30,8 +32,8 @@ export function WarningBanner({ warnings = [], escalationFlags = [] }: WarningBa
           key={w.code}
           className={`${baseCard} ${SEVERITY_COLORS[w.severity] ?? 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black'}`}
         >
-          <span className="font-bold uppercase tracking-wide text-xs mr-2">
-            {w.severity === 'high_risk' ? 'High Risk' : w.severity}
+          <span className="mr-2 text-xs font-semibold text-govuk-black">
+            {formatSeverity(w.severity)}:
           </span>
           {w.message}
         </div>
@@ -41,8 +43,8 @@ export function WarningBanner({ warnings = [], escalationFlags = [] }: WarningBa
           key={f.code}
           className={`${baseCard} ${SEVERITY_COLORS[f.severity] ?? 'border-l-4 border-l-govuk-orange bg-amber-50 text-govuk-black'}`}
         >
-          <span className="font-bold uppercase tracking-wide text-xs mr-2">
-            Escalation — {f.severity}
+          <span className="mr-2 text-xs font-semibold text-govuk-black">
+            Escalation ({formatSeverity(f.severity)}):
           </span>
           {f.reason}
         </div>

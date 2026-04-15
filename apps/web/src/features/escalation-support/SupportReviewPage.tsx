@@ -111,11 +111,11 @@ export function SupportReviewPage() {
       <AppHeader
         pageTitle={session.scenario?.title ?? 'Manual call'}
         right={
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
             <StageProgress currentStage={session.stage} />
             <button
               onClick={() => navigate(`/session/${sessionId}/live`)}
-              className="text-sm text-blue-200 hover:text-white font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
+              className="text-xs font-medium text-blue-200 hover:text-white whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
             >
               ← Back to guidance
             </button>
@@ -127,17 +127,17 @@ export function SupportReviewPage() {
 
       {/* Page title strip */}
       <div className="bg-white border-b border-govuk-mid-grey">
-        <div className="max-w-4xl mx-auto px-6 py-3">
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+        <div className="max-w-4xl mx-auto px-4 py-3 sm:px-6">
+          <p className="text-sm font-semibold text-govuk-black">
             Support &amp; Escalation Review
           </p>
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-6 py-6 space-y-5">
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-5 sm:px-6">
         {/* Classification summary */}
         <div className="rounded-sm border border-govuk-mid-grey bg-white px-4 py-3 flex items-center gap-3 flex-wrap shadow-sm text-sm">
-          <span className="text-gray-500 text-xs font-bold uppercase tracking-wide">
+          <span className="text-gray-500 text-xs font-semibold">
             Classification
           </span>
           <span className="text-xs text-gray-400">
@@ -238,7 +238,7 @@ export function SupportReviewPage() {
             <div className="border-t border-govuk-mid-grey px-4 pb-4 pt-3">
               {orderedTypes.map((type) => (
                 <div key={type} className="mb-4">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+                  <p className="mb-2 text-xs font-semibold text-gray-600">
                     {type.replace(/_/g, ' ')}
                   </p>
                   <div className="space-y-1">

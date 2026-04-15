@@ -97,12 +97,12 @@ export function CallIntakePage() {
       />
       {sessionId && <SessionNav sessionId={sessionId} current="intake" />}
 
-      <main className="max-w-3xl mx-auto px-6 py-8 space-y-6">
+      <main className="max-w-3xl mx-auto px-4 py-8 space-y-6 sm:px-6">
         {/* Caller info strip */}
         <div className="rounded-sm border border-govuk-mid-grey bg-white px-4 py-3 shadow-sm">
           <div className="flex items-center gap-6 flex-wrap text-sm">
             <div>
-              <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide mr-1">
+              <span className="text-gray-500 text-xs font-medium mr-1">
                 Caller
               </span>
               <span className="font-semibold text-govuk-black">
@@ -111,7 +111,7 @@ export function CallIntakePage() {
             </div>
             {session.scenario && (
               <div>
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide mr-1">
+                <span className="text-gray-500 text-xs font-medium mr-1">
                   Scenario
                 </span>
                 <span className="font-semibold text-govuk-black">{session.scenario.title}</span>
@@ -121,7 +121,7 @@ export function CallIntakePage() {
         </div>
 
         {/* Stage label */}
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+        <p className="text-sm font-medium text-gray-600">
           Intake question
         </p>
 

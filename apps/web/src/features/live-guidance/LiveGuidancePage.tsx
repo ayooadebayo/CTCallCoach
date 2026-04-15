@@ -285,7 +285,7 @@ export function LiveGuidancePage() {
       />
       {sessionId && <SessionNav sessionId={sessionId} current="live" />}
 
-      <div className="max-w-5xl mx-auto px-6 py-6 space-y-4">
+      <div className="max-w-5xl mx-auto px-4 py-6 sm:px-6 space-y-4">
 
         {/* ── Ocelot history navigation bar ─────────────────────────────── */}
         {totalAnswered > 0 && (
@@ -303,19 +303,17 @@ export function LiveGuidancePage() {
         )}
 
         {/* ── Main content grid ─────────────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
           {/* ── Main column ── */}
-          <div className="col-span-2 space-y-5">
+          <div className="col-span-1 space-y-5 lg:col-span-2">
             {/* Classification status */}
             <div className="rounded-sm border border-govuk-mid-grey bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-2 flex-wrap mb-2">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-                  Classification
-                </span>
-                <span className="text-xs text-gray-400">({workflow.classificationStatus})</span>
+              <div className="flex items-center gap-2 flex-wrap mb-2 text-sm">
+                <span className="font-semibold text-govuk-black">Classification</span>
+                <span className="text-xs text-gray-500">({workflow.classificationStatus})</span>
                 <span className="text-xs text-gray-500">
-                  Stage:{' '}
+                  Current stage:{' '}
                   <strong className="text-govuk-black">
                     {STAGE_LABELS[session.stage] ?? session.stage}
                   </strong>
@@ -362,7 +360,7 @@ export function LiveGuidancePage() {
             ) : nextQuestion ? (
               /* Live question */
               <div>
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+                <p className="text-sm font-medium text-gray-600 mb-2">
                   {STAGE_LABELS[nextQuestion.stage] ?? nextQuestion.stage} question
                 </p>
                 <QuestionCard
@@ -374,8 +372,8 @@ export function LiveGuidancePage() {
               </div>
             ) : canAdvance ? (
               /* Stage advance prompt */
-              <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-blue bg-sky-50 p-4 flex items-center justify-between shadow-sm">
-                <div>
+              <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-blue bg-sky-50 p-4 shadow-sm flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
                   <p className="text-sm font-bold text-govuk-black">
                     All {STAGE_LABELS[session.stage] ?? session.stage} questions answered
                   </p>
@@ -390,7 +388,7 @@ export function LiveGuidancePage() {
                 <button
                   onClick={handleAdvanceStage}
                   disabled={advancing}
-                  className="rounded-[2px] bg-govuk-blue px-4 py-2 text-sm font-bold text-white hover:bg-govuk-blue-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
+                  className="w-full rounded-[2px] bg-govuk-blue px-4 py-2 text-sm font-bold text-white hover:bg-govuk-blue-dark disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-govuk-yellow sm:w-auto"
                 >
                   {advancing ? 'Advancing…' : 'Next Stage →'}
                 </button>
@@ -400,13 +398,13 @@ export function LiveGuidancePage() {
             {/* Support options */}
             {workflow.supportOptions.length > 0 && (
               <div className="rounded-sm border border-govuk-mid-grey bg-white p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                <div className="mb-3 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm font-semibold text-govuk-black">
                     Support options triggered
                   </p>
                   <button
                     onClick={() => navigate(`/session/${sessionId}/support`)}
-                    className="text-xs text-govuk-blue hover:text-govuk-blue-dark font-bold underline focus:outline-none focus:ring-2 focus:ring-govuk-yellow whitespace-nowrap"
+                    className="text-xs text-govuk-blue hover:text-govuk-blue-dark font-bold underline focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
                   >
                     Support &amp; Escalation Review →
                   </button>
@@ -435,11 +433,11 @@ export function LiveGuidancePage() {
               <>
                 {guidance.public_policy.length > 0 && (
                   <div>
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <p className="text-xs font-bold text-govuk-blue uppercase tracking-wide">
+                    <div className="mb-2 flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-govuk-blue">
                         Policy guidance
                       </p>
-                      <span className="text-xs text-gray-400">Statutory / regulatory</span>
+                      <span className="text-xs text-gray-500">Statutory / regulatory</span>
                     </div>
                     <div className="space-y-2">
                       {guidance.public_policy.map((c) => (
@@ -450,11 +448,11 @@ export function LiveGuidancePage() {
                 )}
                 {guidance.acme_operations.length > 0 && (
                   <div>
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <p className="text-xs font-bold text-govuk-orange uppercase tracking-wide">
+                    <div className="mb-2 flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-govuk-orange">
                         Operations guidance
                       </p>
-                      <span className="text-xs text-gray-400">Acme-specific</span>
+                      <span className="text-xs text-gray-500">Acme-specific</span>
                     </div>
                     <div className="space-y-2">
                       {guidance.acme_operations.map((c) => (

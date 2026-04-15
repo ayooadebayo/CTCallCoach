@@ -32,6 +32,7 @@ export function QuestionCard({ question, onSubmit, submitting = false, aiRationa
   const [numberValue, setNumberValue] = useState(
     initialValue?.number != null ? String(initialValue.number) : '',
   );
+  const [showRationale, setShowRationale] = useState(false);
 
   function handleSubmit() {
     if (question.question_type === 'boolean') return;
@@ -48,43 +49,64 @@ export function QuestionCard({ question, onSubmit, submitting = false, aiRationa
     }
   }
 
+  const rationaleText = aiRationale?.rationale ?? question.why_it_matters_text;
+  const hasRationale = !!rationaleText;
+
   return (
     <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-blue bg-white p-5 shadow-sm">
       {/* Sensitivity warning */}
       {question.sensitivity_warning && (
         <div className="mb-4 rounded-sm border-l-4 border-l-govuk-orange bg-amber-50 px-3 py-2 text-xs text-govuk-black">
-          <span className="font-bold uppercase tracking-wide mr-1">Sensitivity:</span>
+          <span className="font-semibold mr-1">Sensitivity:</span>
           {question.sensitivity_warning}
         </div>
       )}
 
       {/* Question text */}
-      <p className="text-[17px] font-semibold text-govuk-black mb-2 leading-snug">
+      <p className="mb-2 text-base font-semibold leading-snug text-govuk-black sm:text-[17px]">
         {question.question_text}
       </p>
 
       {/* Why it matters — prefer AI rationale when available, fall back to curated text */}
-      {(aiRationale?.rationale || question.why_it_matters_text) && (
-        <div className="bg-govuk-light-grey rounded-sm px-3 py-2 mb-4">
-          {aiRationale?.rationale ? (
-            <>
-              <p className="text-xs text-govuk-black italic leading-relaxed">
-                {aiRationale.rationale}
+      {hasRationale && (
+        <>
+          <div className="mb-4 rounded-sm bg-govuk-light-grey px-3 py-2 md:hidden">
+            <button
+              type="button"
+              onClick={() => setShowRationale((v) => !v)}
+              className="flex w-full items-center justify-between text-left text-xs font-semibold text-govuk-blue focus:outline-none focus:ring-2 focus:ring-govuk-yellow"
+            >
+              Why we ask this
+              <span className="text-gray-500">{showRationale ? '▲' : '▼'}</span>
+            </button>
+            {showRationale && (
+              <div className="mt-2 space-y-1.5">
+                <p className="text-xs italic leading-relaxed text-govuk-black">{rationaleText}</p>
+                {aiRationale?.learning_tip && (
+                  <p className="text-xs leading-relaxed text-govuk-blue">
+                    <span className="font-semibold not-italic">Tip: </span>
+                    {aiRationale.learning_tip}
+                  </p>
+                )}
+                {aiRationale?.rationale && (
+                  <p className="text-xs text-gray-400">AI-assisted</p>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="mb-4 hidden rounded-sm bg-govuk-light-grey px-3 py-2 md:block">
+            <p className="text-xs italic leading-relaxed text-govuk-black">{rationaleText}</p>
+            {aiRationale?.learning_tip && (
+              <p className="mt-1 text-xs leading-relaxed text-govuk-blue">
+                <span className="font-semibold not-italic">Tip: </span>
+                {aiRationale.learning_tip}
               </p>
-              {aiRationale.learning_tip && (
-                <p className="text-xs text-govuk-blue mt-1 leading-relaxed">
-                  <span className="font-semibold not-italic">Tip: </span>
-                  {aiRationale.learning_tip}
-                </p>
-              )}
-              <p className="text-xs text-gray-400 mt-1 not-italic">AI-assisted</p>
-            </>
-          ) : (
-            <p className="text-xs text-govuk-black italic leading-relaxed">
-              {question.why_it_matters_text}
-            </p>
-          )}
-        </div>
+            )}
+            {aiRationale?.rationale && (
+              <p className="mt-1 text-xs text-gray-400">AI-assisted</p>
+            )}
+          </div>
+        </>
       )}
 
       {/* Boolean */}
@@ -139,12 +161,12 @@ export function QuestionCard({ question, onSubmit, submitting = false, aiRationa
 
       {/* Numeric */}
       {question.question_type === 'numeric' && (
-        <div className="mt-3 flex gap-3 items-start">
+        <div className="mt-3 flex flex-col items-stretch gap-3 sm:flex-row sm:items-start">
           <input
             type="number"
             value={numberValue}
             onChange={(e) => setNumberValue(e.target.value)}
-            className="w-36 border-2 border-govuk-black bg-white px-3 py-2 text-sm text-govuk-black rounded-sm focus:outline-none focus:ring-4 focus:ring-govuk-yellow"
+            className="w-full rounded-sm border-2 border-govuk-black bg-white px-3 py-2 text-sm text-govuk-black focus:outline-none focus:ring-4 focus:ring-govuk-yellow sm:w-36"
             placeholder="Enter number"
           />
           <button

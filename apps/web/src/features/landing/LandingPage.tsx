@@ -21,7 +21,7 @@ function SectionHeading({ children }: { children: string }) {
 function Navbar() {
   return (
     <nav
-      className="w-full bg-govuk-black flex items-center justify-between px-6"
+      className="w-full bg-govuk-black flex flex-wrap items-center justify-between gap-2 px-4 sm:px-6"
       style={{ height: 56 }}
     >
       <span className="text-white font-bold text-base">Acme City Council</span>
@@ -47,17 +47,11 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section className="w-full bg-govuk-blue py-20 px-6 text-center">
-      <h1
-        className="text-white font-bold mx-auto"
-        style={{ fontSize: 48, lineHeight: 1.15, maxWidth: 720 }}
-      >
+    <section className="w-full bg-govuk-blue py-16 px-4 text-center sm:px-6 sm:py-20">
+      <h1 className="mx-auto max-w-[720px] text-3xl font-bold leading-tight text-white sm:text-5xl">
         Guided call coaching for council tax advisors
       </h1>
-      <p
-        className="text-white mx-auto mt-5"
-        style={{ fontSize: 20, opacity: 0.9, maxWidth: 600 }}
-      >
+      <p className="mx-auto mt-5 max-w-[600px] text-base text-white opacity-90 sm:text-xl">
         Rules-led. AI-assisted. Built for the pressure of a live resident call.
       </p>
       <div className="flex items-center justify-center flex-wrap gap-4 mt-10">
@@ -177,7 +171,7 @@ function HowItWorks() {
       <div className="max-w-[1100px] mx-auto">
         <SectionLabel>HOW IT WORKS</SectionLabel>
         <SectionHeading>The workflow guides the call. The AI supports the advisor.</SectionHeading>
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {WORKFLOW_STEPS.map((step) => (
             <div key={step.n}>
               <p className="text-govuk-blue font-bold mb-2" style={{ fontSize: 40 }}>

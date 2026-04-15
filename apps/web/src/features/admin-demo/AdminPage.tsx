@@ -119,7 +119,7 @@ export function AdminPage() {
 
       {/* Page title strip */}
       <div className="bg-white border-b border-govuk-mid-grey">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between flex-wrap gap-2">
+        <div className="max-w-5xl mx-auto px-4 py-3 sm:px-6 flex items-center justify-between flex-wrap gap-2">
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
               System Transparency View
@@ -134,7 +134,7 @@ export function AdminPage() {
         </div>
       </div>
 
-      <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-5xl mx-auto px-4 py-8 space-y-8 sm:px-6">
 
         {error && (
           <div className="rounded-sm border border-govuk-mid-grey border-l-4 border-l-govuk-red bg-red-50 px-4 py-3 text-sm text-govuk-black">
@@ -196,41 +196,43 @@ export function AdminPage() {
               subtitle="Classification paths the workflow engine can assign to a call"
             />
             <Card className="p-0 overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-govuk-light-grey border-b border-govuk-mid-grey">
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Code</th>
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Label</th>
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Category</th>
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Overlay?</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {catalog.enquiry_types.map((et) => (
-                    <tr key={et.id} className="border-b border-govuk-mid-grey last:border-0 hover:bg-govuk-light-grey">
-                      <td className="px-4 py-2.5 font-mono text-xs font-semibold text-govuk-black">{et.code}</td>
-                      <td className="px-4 py-2.5 font-semibold text-govuk-black">{et.label}</td>
-                      <td className="px-4 py-2.5 text-gray-500 text-xs">{et.category ?? '—'}</td>
-                      <td className="px-4 py-2.5">
-                        {et.is_overlay ? (
-                          <span className="text-xs font-bold rounded-full px-2 py-0.5 bg-govuk-blue text-white">
-                            Overlay
-                          </span>
-                        ) : (
-                          <span className="text-xs text-gray-400">Primary</span>
-                        )}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[620px] text-sm">
+                  <thead>
+                    <tr className="bg-govuk-light-grey border-b border-govuk-mid-grey">
+                      <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Code</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Label</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Category</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase tracking-wide">Overlay?</th>
                     </tr>
-                  ))}
-                  {catalog.enquiry_types.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-4 text-sm text-gray-400 italic">
-                        No enquiry types seeded yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {catalog.enquiry_types.map((et) => (
+                      <tr key={et.id} className="border-b border-govuk-mid-grey last:border-0 hover:bg-govuk-light-grey">
+                        <td className="px-4 py-2.5 font-mono text-xs font-semibold text-govuk-black">{et.code}</td>
+                        <td className="px-4 py-2.5 font-semibold text-govuk-black">{et.label}</td>
+                        <td className="px-4 py-2.5 text-gray-500 text-xs">{et.category ?? '—'}</td>
+                        <td className="px-4 py-2.5">
+                          {et.is_overlay ? (
+                            <span className="text-xs font-bold rounded-full px-2 py-0.5 bg-govuk-blue text-white">
+                              Overlay
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">Primary</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {catalog.enquiry_types.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-4 text-sm text-gray-400 italic">
+                          No enquiry types seeded yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </Card>
           </section>
         )}
